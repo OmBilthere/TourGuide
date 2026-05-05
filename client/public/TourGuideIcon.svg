@@ -1,0 +1,25 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  
+  <!-- Light Background -->
+  <rect width="512" height="512" rx="80" fill="#f4f7fb"/>
+
+  <!-- Radar circles -->
+  <circle cx="256" cy="256" r="60" stroke="#cbd5e1" stroke-width="2" fill="none"/>
+  <circle cx="256" cy="256" r="110" stroke="#cbd5e1" stroke-width="2" fill="none"/>
+  <circle cx="256" cy="256" r="160" stroke="#cbd5e1" stroke-width="2" fill="none"/>
+
+  <!-- Location Pin -->
+  <path d="M256 120
+           C200 120, 160 165, 160 220
+           C160 290, 256 380, 256 380
+           C256 380, 352 290, 352 220
+           C352 165, 312 120, 256 120 Z"
+        fill="#3b82f6"/>
+
+  <!-- Inner circle -->
+  <circle cx="256" cy="220" r="28" fill="#ffffff"/>
+
+  <!-- Center dot -->
+  <circle cx="256" cy="220" r="10" fill="#3b82f6"/>
+
+</svg>

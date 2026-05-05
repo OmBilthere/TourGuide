@@ -1,32 +1,47 @@
-import React, { useMemo, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useMemo, useState, useEffect } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import CityCard from "../components/CityCard.jsx";
-import { citiesData } from "../assets/assets.js";
 
 const Explore = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
+  const [cities, setCities] = useState([]);
+
+  
+  useEffect(() => {
+    const controller = new AbortController();
+    const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
+
+    const fetchCities = async () => {
+      try {
+        const res = await axios.get(`${API_BASE}/api/cities`, { signal: controller.signal });
+        const data = res.data;
+        const mapped = (data.cities || []).map((c) => ({
+          city: c.city,
+          famousPlaceName: c.famous_place_name || c.famousPlaceName || "",
+          description: c.place_description || c.description || "",
+          coverImage: c.cover_image || c.coverImage || "",
+          totalGuides: c.total_guides ?? c.totalGuides ?? 0,
+        }));
+
+        setCities(mapped);
+      } catch (err) {
+        const isCanceled = err.name === "CanceledError" || axios.isCancel?.(err);
+        if (!isCanceled) console.error("Error fetching cities:", err);
+      }
+    };
+
+    fetchCities();
+
+    return () => controller.abort();
+  }, []);
+
 
   const rankedCities = useMemo(() => {
-    const grouped = Object.values(
-      citiesData.reduce((acc, city) => {
-        if (!acc[city.city]) {
-          acc[city.city] = {
-            city: city.city,
-            totalGuides: 0,
-            coverImage: city.famousPlaceImages[0],
-            famousPlaceName: city.famousPlaceName,
-            description: city.placeDescription,
-          };
-        }
-
-        acc[city.city].totalGuides += 1;
-        return acc;
-      }, {})
-    );
-
-    return grouped.sort((a, b) => b.totalGuides - a.totalGuides);
-  }, []);
+    const list = [...cities];
+    return list.sort((a, b) => b.totalGuides - a.totalGuides);
+  }, [cities]);
 
   const handleSearchSubmit = () => {
     if (searchTerm.trim()) {
@@ -35,9 +50,9 @@ const Explore = () => {
   };
 
   const filteredCities = rankedCities.filter((city) =>
-    city.city.toLowerCase().includes(searchTerm.toLowerCase())
+    city.city.toLowerCase().includes(searchTerm.toLowerCase( ))
   );
-
+ 
   
 
   return (
@@ -85,10 +100,10 @@ const Explore = () => {
 
       <div className="mt-16">
         <h2 className="text-3xl font-semibold text-slate-800">Top Cities</h2>
-        <p className="text-gray-500 mt-2">Top 5 cities based on available guides.</p>
+        <p className="text-gray-500 mt-2">Top cities based on available guides.</p>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mt-8">
-          {rankedCities.slice(0, 5).map((city, index) => (
+          {rankedCities.slice(0, 10).map((city, index) => (
             <CityCard key={`top-${city.city}-${index}`} city={city} index={index} showRank={true} />
           ))}
         </div>

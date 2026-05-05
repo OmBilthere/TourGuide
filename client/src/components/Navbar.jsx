@@ -1,19 +1,46 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { assets } from '../assets/assets'
 import { useNavigate, NavLink } from 'react-router-dom'
 import { ArrowRight, Menu, X } from 'lucide-react'
 import { useClerk, useUser, UserButton } from '@clerk/clerk-react'
+import axios from 'axios'
 
 const Navbar = () => {
+
   const navigate = useNavigate()
   const { user } = useUser()
   const { openSignIn } = useClerk()
   const [open, setOpen] = useState(false)
+  const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000"
+
+  useEffect(() => {
+    const syncCurrentUser = async () => {
+      if (!user) return
+
+      try {
+        const res = await axios.post(`${API_BASE}/api/users/sync`, {
+          clerk_user_id: user.id,
+          full_name: user.fullName || "",
+          email: user.primaryEmailAddress?.emailAddress || "",
+          avatar_url: user.imageUrl || "",
+          role: "tourist",
+        })
+
+        if (res.data?.token) {
+          localStorage.setItem("token", res.data.token)
+        }
+      } catch (error) {
+        console.error("Failed to sync user:", error)
+      }
+    }
+
+    syncCurrentUser()
+  }, [user, API_BASE])
 
   const navLinks = [
     { name: 'Home', path: '/' },
     { name: 'Explore', path: '/Explore' },
-    { name: 'History', path: '/history' },
+    { name: 'My Bookings', path: '/bookings' },
     { name: 'About', path: '/about' },
     { name: 'Contact', path: '/contact' },
   ]
@@ -21,11 +48,11 @@ const Navbar = () => {
   return (
     <>
       {/* Navbar */}
-      <div className='fixed z-50 w-full backdrop-blur-2xl flex justify-between items-center px-4 py-3 sm:px-20 xl:px-32 border-b border-gray-100 '>
+      <div className='fixed z-50 w-full backdrop-blur-2xl flex justify-between items-center px-4 py-3 sm:px-20 xl:px-32 border-b border-gray-400 '>
         {/* Logo */}
         <img
           src={assets.logo}
-          className='w-32 sm:w-44 cursor-pointer'
+          className='w-32 sm:w-44 cursor-pointer rounded-lg'
           alt='logo'
           onClick={() => navigate('/')}
         />
@@ -98,13 +125,13 @@ const Navbar = () => {
         </div>
 
         {/* Sidebar Links */}
-        <div className='flex flex-col p-8 gap-8 text-lg text-slate-700 font-medium'>
+        <div className='flex flex-col p-5 gap-8 text-lg text-slate-700 font-medium'>
           {navLinks.map((link) => (
             <NavLink
               key={link.name}
               to={link.path}
               onClick={() => setOpen(false)}
-              className={({ isActive }) =>
+              className={ ({ isActive }) =>
                 isActive ? 'text-sky-500' : ''
               }
             >
@@ -112,6 +139,8 @@ const Navbar = () => {
             </NavLink>
           ))}
         </div>
+
+       
       </div>
     </>
   )

@@ -20,6 +20,7 @@ function App() {
           <Route path="Explore" element={<Explore />} />
           <Route path="Explore/:cityName" element={<CityDetails />} />
           <Route path="Explore/:cityName/guide/:guideId" element={<GuideDetails />} />
+          <Route path="bookings" element={<BookingHistory />} />
           <Route path="history" element={<BookingHistory />} />
           <Route path="about" element={<About />} />
           <Route path="contact" element={<Contact />} />

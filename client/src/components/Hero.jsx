@@ -22,7 +22,7 @@ const Hero = () => {
       <div className="flex flex-wrap justify-center gap-4 text-sm max-sm:text-xs">
         <button
           onClick={() => navigate("/explore")}
-          className="bg-sky-400 text-white px-10 py-3 rounded-lg 
+          className="bg-sky-400 text-white px-10 py-3 rounded-lg
           hover:scale-105 active:scale-95 transition cursor-pointer"
         >
           Get Started

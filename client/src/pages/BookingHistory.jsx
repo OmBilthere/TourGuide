@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { dummyBookings } from "../assets/assets.js";
 import toast from "react-hot-toast";
+import axios from "axios";
+import { useUser } from "@clerk/clerk-react";
 
 const statusStyles = {
   requested: "bg-yellow-100 text-yellow-700",
@@ -12,64 +13,146 @@ const statusStyles = {
 
 const BookingHistory = () => {
   const navigate = useNavigate();
-  const [bookings, setBookings] = useState(dummyBookings);
+  const [bookings, setBookings] = useState([]);
   const [activeModal, setActiveModal] = useState(null);
+  const { user, isLoaded } = useUser();
+
+  const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
+  const getAuthHeaders = () => ({
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
 
 
-  const handleCancelBooking = (id) => {
-  
-    setBookings((prev) =>
-      prev.map((b) => (b.id === id ? { ...b, status: "cancelled" } : b))
-    );
-    setActiveModal(null);
-  };
+  useEffect(() => {
+    if (!isLoaded || !user?.id) return;
 
-const handlePayment = (booking) => {
-  const options = {
-    key: import.meta.env.VITE_RAZORPAY_KEY_ID,
-    amount: booking.guide.price * 100, // Razorpay paisa paise mein leta hai (x100)
-    currency: "INR",
-    name: "TourGuide App",
-    description: `Booking with ${booking.guide.name}`,
-    image: booking.guide.image,
-    handler: async function (response) {
-      // Payment successful
-      // response.razorpay_payment_id milega
+    const controller = new AbortController();
 
-      // TODO: DB mein paymentStatus update karo
-      // await updateDoc(doc(db, "bookings", booking.id), {
-      //   paymentStatus: "paid",
-      //   paymentId: response.razorpay_payment_id,
-      // });
+    const fetchBookings = async () => {
+      try {
+        const res = await axios.get(
+          `${API_BASE}/api/bookings/history/${user.id}`,
+          {
+            signal: controller.signal,
+            ...getAuthHeaders(),
+          }
+        );
 
-      // Local state update
-      setBookings((prev) =>
-        prev.map((b) =>
-          b.id === booking.id
-            ? {
-                ...b,
-                paymentStatus: "paid",
-                paymentId: response.razorpay_payment_id,
-              }
-            : b
-        )
+        const mappedBookings = (res.data.bookings || []).map((booking) => ({
+          id: booking.id,
+          status: booking.booking_status,
+          paymentStatus: booking.payment_status,
+          amount: booking.amount,
+          bookedAt: booking.booked_at,
+          tripDate: booking.trip_date,
+          city: booking.city,
+          slot: booking.slot_label,
+          guide: {
+            id: booking.guide_id,
+            name: booking.guide_name,
+            image: booking.guide_image,
+            email: booking.guide_email,
+            phone: booking.guide_number,
+            speciality: booking.speciality,
+            price: booking.price_per_hour,
+          },
+        }));
+
+        setBookings(mappedBookings);
+      } catch (error) {
+        const isCanceled = error.name === "CanceledError" || axios.isCancel?.(error);
+        if (!isCanceled) console.error("Error fetching bookings:", error);
+      }
+    };
+
+    fetchBookings();
+    return () => controller.abort();
+  }, [isLoaded, user?.id])
+
+  const handleCancelBooking = async (id) => {
+    try {
+      const res = await axios.patch(
+        `${API_BASE}/api/bookings/cancel/${id}`,
+        {},
+        getAuthHeaders()
       );
 
-      setActiveModal(null);
-      toast.success("Payment successful!");
-    },
-    prefill: {
-      name: booking.userName,
-      email: booking.userEmail,
-    },
-    theme: {
-      color: "#60a5fa", // blue-400
-    },
+      if (res.data?.success) {
+        toast.success("Booking cancelled successfully");
+        setBookings((prev) =>
+          prev.map((b) => (b.id === id ? { ...b, status: "cancelled" } : b))
+        );
+        setActiveModal(null);
+      }
+    } catch (error) {
+      const isCanceled = error.name === "CanceledError" || axios.isCancel?.(error);
+      if (!isCanceled) console.error("Error canceling booking:", error);
+      toast.error(error.response?.data?.message || "Failed to cancel booking");
+    }
   };
 
-  const razor = new window.Razorpay(options);
-  razor.open();
-};
+  const handlePayment = async (booking) => {
+    try {
+      const orderRes = await axios.post(
+        `${API_BASE}/api/bookings/pay/order`,
+        { bookingId: booking.id },
+        getAuthHeaders()
+      );
+
+      const { order, keyId } = orderRes.data;
+
+      if (!order || !keyId) {
+        toast.error("Failed to initialize payment");
+        return;
+      }
+
+      const options = {
+        key: keyId,
+        amount: order.amount,
+        currency: order.currency,
+        name: "Tourist Guide Booking",
+        description: `Payment for booking with ${booking.guide.name}`,
+        order_id: order.id,
+        handler: async function (response) {
+          try {
+            const verifyRes = await axios.post(
+              `${API_BASE}/api/bookings/pay/verify`,
+              {
+                bookingId: booking.id,
+                razorpay_order_id: order.id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+              },
+              getAuthHeaders()
+            );
+
+            if (verifyRes.data?.success) {
+              toast.success("Payment successful!");
+              setBookings((prev) =>
+                prev.map((b) =>
+                  b.id === booking.id ? { ...b, paymentStatus: "paid" } : b
+                )
+              );
+              setActiveModal(null);
+            } else {
+              toast.error(verifyRes.data?.message || "Payment verification failed");
+            }
+          } catch (error) {
+            console.error("Error verifying payment:", error);
+            toast.error(error.response?.data?.message || "Payment verification failed");
+          }
+        },
+      };
+
+      const razor = new window.Razorpay(options);
+      razor.open();
+    } catch (error) {
+      console.error("Error creating payment order:", error);
+      toast.error(error.response?.data?.message || "Failed to create payment order");
+    }
+  };
 
   const activeBooking = bookings.find((b) => b.id === activeModal);
 
@@ -90,7 +173,7 @@ const handlePayment = (booking) => {
   return (
     <div className="px-4 sm:px-20 xl:px-32 py-20">
       <h1 className="text-4xl font-semibold text-slate-800 mb-10">
-        Booking History
+        My Bookings
       </h1>
 
       <div className="flex flex-col gap-6">
@@ -101,32 +184,34 @@ const handlePayment = (booking) => {
           >
             {/* Guide Image */}
             <img
-              src={booking.guide.image}
-              alt={booking.guide.name}
+              src={booking.guide?.image || "https://via.placeholder.com/150"}
+              alt={booking.guide?.name || "Guide"}
               className="w-full sm:w-36 h-36 object-cover rounded-xl"
             />
 
             {/* Details */}
             <div className="flex-1 space-y-1">
               <h2 className="text-xl font-semibold text-slate-800">
-                {booking.guide.name}
+                {booking.guide?.name || "Unknown Guide"}
               </h2>
               <p className="text-gray-500 text-sm">
-                {booking.city} · {booking.guide.speciality}
+                {booking.city || "Unknown City"} · {booking.guide?.speciality || "General"}
               </p>
               <p className="text-gray-600 text-sm">
                 <strong>Slot:</strong> {booking.slot}
               </p>
               <p className="text-gray-600 text-sm">
-                <strong>Price:</strong> ₹{booking.guide.price}/hr
+                <strong>Price:</strong> ₹{booking.guide?.price || 0}/hr
               </p>
               <p className="text-gray-600 text-sm">
                 <strong>Booked on:</strong>{" "}
-                {new Date(booking.bookedAt).toLocaleDateString("en-IN", {
+                {booking.bookedAt
+                  ? new Date(booking.bookedAt).toLocaleDateString("en-IN", {
                   day: "numeric",
                   month: "short",
                   year: "numeric",
-                })}
+                  })
+                  : "N/A"}
               </p>
 
               {/* Status Badge */}
@@ -161,7 +246,7 @@ const handlePayment = (booking) => {
               <button
                 onClick={() =>
                   navigate(
-                    `/Explore/${booking.city.toLowerCase()}/guide/${booking.guide.id}`
+                    `/Explore/${(booking.city || "").toLowerCase()}/guide/${booking.guide?.id}`
                   )
                 }
                 className="px-5 py-2 bg-blue-400 text-white rounded-xl text-sm hover:bg-blue-500 transition"
