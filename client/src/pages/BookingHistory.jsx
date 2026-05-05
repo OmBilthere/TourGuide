@@ -49,15 +49,13 @@ const BookingHistory = () => {
           tripDate: booking.trip_date,
           city: booking.city,
           slot: booking.slot_label,
-          guide: {
-            id: booking.guide_id,
-            name: booking.guide_name,
-            image: booking.guide_image,
-            email: booking.guide_email,
-            phone: booking.guide_number,
-            speciality: booking.speciality,
-            price: booking.price_per_hour,
-          },
+          guideId: booking.guide_id,
+          guideName: booking.guide_name,
+          guideImage: booking.guide_image,
+          guideEmail: booking.guide_email,
+          guidePhone: booking.guide_number,
+          guideSpeciality: booking.speciality,
+          guidePrice: booking.price_per_hour,
         }));
 
         setBookings(mappedBookings);
@@ -108,12 +106,12 @@ const BookingHistory = () => {
         return;
       }
 
-      const options = {
+        const options = {
         key: keyId,
         amount: order.amount,
         currency: order.currency,
         name: "Tourist Guide Booking",
-        description: `Payment for booking with ${booking.guide.name}`,
+        description: `Payment for booking with ${booking.guideName}`,
         order_id: order.id,
         handler: async function (response) {
           try {
@@ -184,24 +182,24 @@ const BookingHistory = () => {
           >
             {/* Guide Image */}
             <img
-              src={booking.guide?.image || "https://via.placeholder.com/150"}
-              alt={booking.guide?.name || "Guide"}
+              src={booking.guideImage || "https://via.placeholder.com/150"}
+              alt={booking.guideName || "Guide"}
               className="w-full sm:w-36 h-36 object-cover rounded-xl"
             />
 
             {/* Details */}
             <div className="flex-1 space-y-1">
               <h2 className="text-xl font-semibold text-slate-800">
-                {booking.guide?.name || "Unknown Guide"}
+                {booking.guideName || "Unknown Guide"}
               </h2>
               <p className="text-gray-500 text-sm">
-                {booking.city || "Unknown City"} · {booking.guide?.speciality || "General"}
+                {booking.city || "Unknown City"} · {booking.guideSpeciality || "General"}
               </p>
               <p className="text-gray-600 text-sm">
                 <strong>Slot:</strong> {booking.slot}
               </p>
               <p className="text-gray-600 text-sm">
-                <strong>Price:</strong> ₹{booking.guide?.price || 0}/hr
+                <strong>Price:</strong> ₹{booking.guidePrice || 0}/hr
               </p>
               <p className="text-gray-600 text-sm">
                 <strong>Booked on:</strong>{" "}
@@ -246,7 +244,7 @@ const BookingHistory = () => {
               <button
                 onClick={() =>
                   navigate(
-                    `/Explore/${(booking.city || "").toLowerCase()}/guide/${booking.guide?.id}`
+                    `/Explore/${(booking.city || "").toLowerCase()}/guide/${booking.guideId}`
                   )
                 }
                 className="px-5 py-2 bg-blue-400 text-white rounded-xl text-sm hover:bg-blue-500 transition"
@@ -271,13 +269,13 @@ const BookingHistory = () => {
             {/* Header */}
             <div className="flex items-center gap-4 mb-6">
               <img
-                src={activeBooking.guide.image}
-                alt={activeBooking.guide.name}
+                src={activeBooking.guideImage}
+                alt={activeBooking.guideName}
                 className="w-16 h-16 rounded-full object-cover"
               />
               <div>
                 <h2 className="text-xl font-semibold text-slate-800">
-                  {activeBooking.guide.name}
+                  {activeBooking.guideName}
                 </h2>
                 <p className="text-gray-500 text-sm">{activeBooking.city}</p>
               </div>
@@ -288,8 +286,8 @@ const BookingHistory = () => {
               <p className="text-sm text-gray-500 font-medium">
                 Contact Details
               </p>
-              <p className="text-slate-800">📞 {activeBooking.guide.phone}</p>
-              <p className="text-slate-800">✉️ {activeBooking.guide.email}</p>
+              <p className="text-slate-800">📞 {activeBooking.guidePhone}</p>
+              <p className="text-slate-800">✉️ {activeBooking.guideEmail}</p>
             </div>
 
             {/* Booking Details */}
@@ -301,7 +299,7 @@ const BookingHistory = () => {
                 <strong>Slot:</strong> {activeBooking.slot}
               </p>
               <p className="text-slate-800 text-sm">
-                <strong>Amount:</strong> ₹{activeBooking.guide.price}/hr
+                <strong>Amount:</strong> ₹{activeBooking.guidePrice}/hr
               </p>
               <p className="text-sm">
                 Payment:{" "}
@@ -326,7 +324,7 @@ const BookingHistory = () => {
                   onClick={() => handlePayment(activeBooking)}
                   className="flex-1 py-3 bg-blue-400 text-white rounded-xl font-medium hover:bg-blue-500 transition"
                 >
-                  Pay Now ₹{activeBooking.guide.price}
+                  Pay Now ₹{activeBooking.guidePrice}
                 </button>
               )}
               <button
