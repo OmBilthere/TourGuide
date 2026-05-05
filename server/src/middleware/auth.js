@@ -58,7 +58,8 @@ export const requireAuth = async (req, res, next) => {
 		req.authUser = authUser;
 		req.authTokenPayload = payload;
 		next();
-	} catch (error) {
+
+	    } catch (error) {
 		console.error("auth middleware error:", error);
 		if (error?.name === "TokenExpiredError" || error?.name === "JsonWebTokenError") {
 			return res.status(401).json({

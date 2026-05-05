@@ -77,14 +77,6 @@ WHERE id = $1
 RETURNING *;
 `;
 
-export const payBookingQuery = `
-UPDATE bookings
-SET payment_status = 'paid'
-WHERE id = $1
-    AND booking_status = 'confirmed'
-RETURNING *;
-`;
-
 export const getBookingOwnerQuery = `
 SELECT id, user_id
 FROM bookings

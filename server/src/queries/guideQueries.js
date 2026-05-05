@@ -81,7 +81,8 @@ SELECT
       JSON_AGG(
         DISTINCT JSONB_BUILD_OBJECT(
           'id', gs.id,
-          'label', gs.slot_label
+          'label', gs.slot_label,
+          'is_available', gs.is_available
         )
       ) FILTER (WHERE gs.id IS NOT NULL),
       '[]'
@@ -139,10 +140,18 @@ WHERE b.guide_id = $1
 ORDER BY b.booked_at DESC;
 `;
 
+export const getGuideIdByUserIdQuery = `
+SELECT id
+FROM guides
+WHERE user_id = $1
+LIMIT 1;
+`;
+
 export const confirmGuideBookingQuery = `
 UPDATE bookings
 SET booking_status = 'confirmed'
 WHERE id = $1
+  AND guide_id = $2
 RETURNING *;
 `;
 
@@ -151,5 +160,6 @@ UPDATE bookings
 SET booking_status = 'completed',
     payment_status = 'paid'
 WHERE id = $1
+  AND guide_id = $2
 RETURNING *;
 `;

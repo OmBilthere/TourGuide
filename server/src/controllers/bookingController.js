@@ -6,7 +6,6 @@ import {
   createBookingQuery,
   updateSlotAvailabilityQuery,
   getBookingHistoryQuery,
-  payBookingQuery,
   getBookingForPaymentQuery,
   getBookingOwnerQuery,
   verifyAndMarkPaidQuery,
@@ -33,7 +32,7 @@ export const createBooking = async (req, res) => {
       amount,
       trip_date,
     } = req.body;
-
+    
     if (authUserId !== user_id) {
       return res.status(403).json({
         success: false,
@@ -212,50 +211,6 @@ export const verifyBookingPayment = async (req, res) => {
   } catch (error) {
     console.error("verify payment error:", error);
     return res.status(500).json({ success: false, message: "Failed to verify payment" });
-  }
-};
-
-export const payBooking = async (req, res) => {
-  try {
-    const { bookingId } = req.params;
-    const authUserId = req.authUser?.clerk_user_id;
-
-    const ownerResult = await db.query(getBookingOwnerQuery, [bookingId]);
-    const owner = ownerResult.rows[0];
-
-    if (!owner) {
-      return res.status(404).json({
-        success: false,
-        message: "Booking not found",
-      });
-    }
-
-    if (owner.user_id !== authUserId) {
-      return res.status(403).json({
-        success: false,
-        message: "Forbidden: cannot pay for another user's booking",
-      });
-    }
-
-    const result = await db.query(payBookingQuery, [bookingId]);
-
-    if (result.rows.length === 0) {
-      return res.status(400).json({
-        success: false,
-        message: "Payment is allowed only for confirmed bookings",
-      });
-    }
-
-    res.status(200).json({
-      success: true,
-      booking: result.rows[0],
-    });
-  } catch (error) {
-    console.error("pay booking error:", error);
-    res.status(500).json({
-      success: false,
-      message: "Failed to process payment",
-    });
   }
 };
 
