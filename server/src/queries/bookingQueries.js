@@ -39,7 +39,7 @@ SELECT
     u.email AS guide_email,
     NULL::text AS guide_number,
     g.speciality,
-    g.price_per_hour
+    g.price
 
 FROM bookings b
 JOIN guides g

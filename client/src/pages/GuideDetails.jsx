@@ -38,14 +38,14 @@ const GuideDetails = () => {
         if (g) {
           const mappedGuide = {
             id: g.id,
-            name: g.name || g.full_name || "Unknown",
-            image: g.image || g.avatar_url || "",
+            name: g.name || "Unknown",
+            image: g.image || "",
             rating: g.rating ?? 0,
             city: g.city || cityName || "Unknown",
             languages: Array.isArray(g.languages) ? g.languages : (g.languages || []),
-            speciality: g.speciality || g.specialty || "General",
-            experience: g.experience_years || g.experience || 0,
-            price: g.price_per_hour ?? g.price ?? 0,
+            speciality: g.speciality || "General",
+            experience: g.experience_years ?? 0,
+            price: g.price ?? 0,
             about: g.about || "",
             highlights: Array.isArray(g.highlights) ? g.highlights : (g.highlights || []),
             availableSlots: Array.isArray(g.available_slots) ? g.available_slots : (g.available_slots || []),
@@ -156,7 +156,7 @@ const GuideDetails = () => {
             <p><strong>Languages:</strong> {Array.isArray(guide.languages) ? guide.languages.join(", ") : guide.languages}</p>
             <p><strong>Speciality:</strong> {guide.speciality}</p>
             <p><strong>Experience:</strong> {guide.experience} years</p>
-            <p><strong>Price:</strong> ₹{guide.price}/hr</p>
+            <p><strong>Price:</strong> ₹{guide.price}</p>
           </div>
         </div>
       </div>

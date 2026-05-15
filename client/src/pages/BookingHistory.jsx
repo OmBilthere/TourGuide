@@ -12,12 +12,14 @@ const statusStyles = {
 };
 
 const BookingHistory = () => {
+
   const navigate = useNavigate();
   const [bookings, setBookings] = useState([]);
   const [activeModal, setActiveModal] = useState(null);
   const { user, isLoaded } = useUser();
 
   const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
+  
   const getAuthHeaders = () => ({
     headers: {
       Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -46,7 +48,7 @@ const BookingHistory = () => {
           paymentStatus: booking.payment_status,
           amount: booking.amount,
           bookedAt: booking.booked_at,
-          tripDate: booking.trip_date,
+          tripDate: booking.trip_date, 
           city: booking.city,
           slot: booking.slot_label,
           guideId: booking.guide_id,
@@ -55,7 +57,7 @@ const BookingHistory = () => {
           guideEmail: booking.guide_email,
           guidePhone: booking.guide_number,
           guideSpeciality: booking.speciality,
-          guidePrice: booking.price_per_hour,
+          price: booking.price,
         }));
 
         setBookings(mappedBookings);
@@ -199,7 +201,7 @@ const BookingHistory = () => {
                 <strong>Slot:</strong> {booking.slot}
               </p>
               <p className="text-gray-600 text-sm">
-                <strong>Price:</strong> ₹{booking.guidePrice || 0}/hr
+                <strong>Total Charge:</strong> ₹{booking.amount || 0}
               </p>
               <p className="text-gray-600 text-sm">
                 <strong>Booked on:</strong>{" "}
@@ -299,7 +301,7 @@ const BookingHistory = () => {
                 <strong>Slot:</strong> {activeBooking.slot}
               </p>
               <p className="text-slate-800 text-sm">
-                <strong>Amount:</strong> ₹{activeBooking.guidePrice}/hr
+                <strong>Amount:</strong> ₹{activeBooking.amount}
               </p>
               <p className="text-sm">
                 Payment:{" "}
@@ -324,12 +326,12 @@ const BookingHistory = () => {
                   onClick={() => handlePayment(activeBooking)}
                   className="flex-1 py-3 bg-blue-400 text-white rounded-xl font-medium hover:bg-blue-500 transition"
                 >
-                  Pay Now ₹{activeBooking.guidePrice}
+                  Pay Now ₹{activeBooking.amount}
                 </button>
               )}
               <button
                 onClick={() => setActiveModal(null)}
-                className="flex-1 py-3 border border-gray-300 text-gray-600 rounded-xl hover:bg-gray-50 transition"
+                className="flex-1 py-3 cursor-pointer border border-gray-300 text-gray-600 rounded-xl hover:bg-gray-50 transition"
               >
                 Close
               </button>

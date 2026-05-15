@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import CityCard from "../components/CityCard.jsx";
 
 const Explore = () => {
+  
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [cities, setCities] = useState([]);
@@ -19,10 +20,10 @@ const Explore = () => {
         const data = res.data;
         const mapped = (data.cities || []).map((c) => ({
           city: c.city,
-          famousPlaceName: c.famous_place_name || c.famousPlaceName || "",
-          description: c.place_description || c.description || "",
-          coverImage: c.cover_image || c.coverImage || "",
-          totalGuides: c.total_guides ?? c.totalGuides ?? 0,
+          famousPlaceName: c.famous_place_name || "",
+          description: c.place_description || "",
+          coverImage: c.cover_image || "",
+          totalGuides: c.total_guides ?? 0,
         }));
 
         setCities(mapped);

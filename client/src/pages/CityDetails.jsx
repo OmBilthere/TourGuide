@@ -11,6 +11,7 @@ const CityDetails = () => {
   const [loading, setLoading] = useState(true);
     
   useEffect(() => {
+    
     const controller = new AbortController();
     const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
 
@@ -26,12 +27,12 @@ const CityDetails = () => {
         const guidesData = guidesRes.data?.guides || [];
         const mappedGuides = guidesData.map((g) => ({
           id: g.id,
-          name: g.name || g.full_name,
-          image: g.image || g.avatar_url,
+          name: g.name,
+          image: g.image,
           rating: g.rating ?? 0,
           languages: Array.isArray(g.languages) ? g.languages : (g.languages || []),
-          speciality: g.speciality || g.specialty || "General",
-          price: g.price_per_hour ?? g.price ?? "",
+          speciality: g.speciality || "General",
+          price: g.price ?? "",
         }));
 
         setCityGuides(mappedGuides);
@@ -55,7 +56,7 @@ const CityDetails = () => {
           }
 
           setCityInfo({
-            description: found.place_description || found.description || "",
+            description: found.place_description || "",
             images: imgs,
           });
         } else {
