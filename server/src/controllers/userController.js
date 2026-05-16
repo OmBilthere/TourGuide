@@ -13,7 +13,7 @@ export const syncUser = async (req, res) => {
       });
     }
 
-    const { clerk_user_id, full_name, email, avatar_url, role } = req.body;
+    const { clerk_user_id, full_name, email, phone, avatar_url, role } = req.body;
 
     const allowedRoles = ["tourist", "guide"];
     const finalRole = allowedRoles.includes(role) ? role : "tourist";
@@ -22,6 +22,7 @@ export const syncUser = async (req, res) => {
       clerk_user_id,
       full_name,
       email,
+      phone || null,
       avatar_url,
       finalRole,
     ]);

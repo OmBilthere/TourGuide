@@ -31,6 +31,7 @@ SELECT
     b.amount,
     b.booked_at,
     b.trip_date,
+    b.completion_code,
 
     c.city_name AS city,
 
@@ -44,7 +45,7 @@ SELECT
             ELSE NULL
         END AS guide_email,
         CASE
-            WHEN b.payment_status = 'paid' THEN NULL::text
+            WHEN b.payment_status = 'paid' THEN u.phone
             ELSE NULL
         END AS guide_number,
     g.speciality,

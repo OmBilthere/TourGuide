@@ -140,6 +140,28 @@ WHERE b.guide_id = $1
 ORDER BY b.booked_at DESC;
 `;
 
+export const getGuideBookingForCompletionQuery = `
+SELECT
+    id,
+    booking_status,
+    completion_code
+FROM bookings
+WHERE id = $1
+  AND guide_id = $2
+LIMIT 1;
+`;
+
+export const getGuideBookingForActionQuery = `
+SELECT
+    id,
+    booking_status,
+    slot_id
+FROM bookings
+WHERE id = $1
+  AND guide_id = $2
+LIMIT 1;
+`;
+
 export const getGuideIdByUserIdQuery = `
 SELECT id
 FROM guides
@@ -151,6 +173,8 @@ export const getGuideProfileByUserIdQuery = `
 SELECT
     g.id,
     g.user_id,
+  u.full_name AS name,
+  u.avatar_url AS avatar_url,
     c.city_name AS city,
     g.speciality,
     g.price,
@@ -171,8 +195,10 @@ SELECT
       FILTER (WHERE gs.slot_label IS NOT NULL),
       '{}'
     ) AS slots,
-    COALESCE(BOOL_OR(gs.is_available), false) AS has_available_slots
+    COALESCE(BOOL_OR(gs.is_available), false) AS has_available_slots,
+    u.phone AS phone
 FROM guides g
+JOIN users u ON g.user_id = u.clerk_user_id
 JOIN cities c ON g.city_id = c.id
 LEFT JOIN guide_languages gl ON g.id = gl.guide_id
 LEFT JOIN guide_highlights gh ON g.id = gh.guide_id
@@ -181,6 +207,9 @@ WHERE g.user_id = $1
 GROUP BY
     g.id,
     g.user_id,
+    u.full_name,
+  u.avatar_url,
+    u.phone,
     c.city_name,
     g.speciality,
     g.price,
@@ -257,17 +286,31 @@ VALUES ($1, $2, true);
 
 export const confirmGuideBookingQuery = `
 UPDATE bookings
-SET booking_status = 'confirmed'
+SET booking_status = 'confirmed',
+    completion_code = $3
 WHERE id = $1
   AND guide_id = $2
+  AND booking_status = 'requested'
+RETURNING *;
+`;
+
+export const rejectGuideBookingQuery = `
+UPDATE bookings
+SET booking_status = 'rejected'
+WHERE id = $1
+  AND guide_id = $2
+  AND booking_status = 'requested'
 RETURNING *;
 `;
 
 export const completeGuideBookingQuery = `
 UPDATE bookings
 SET booking_status = 'completed',
-    payment_status = 'paid'
+    payment_status = 'paid',
+    completion_code = NULL
 WHERE id = $1
   AND guide_id = $2
+  AND completion_code = $3
+  AND booking_status = 'confirmed'
 RETURNING *;
 `;

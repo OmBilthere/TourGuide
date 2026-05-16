@@ -8,6 +8,7 @@ const statusStyles = {
   requested: "bg-yellow-100 text-yellow-700",
   confirmed: "bg-green-100 text-green-700",
   cancelled: "bg-red-100 text-red-600",
+  rejected: "bg-rose-100 text-rose-700",
   completed: "bg-blue-100 text-blue-700",
 };
 
@@ -18,6 +19,7 @@ const mapBooking = (booking) => ({
   amount: booking.amount,
   bookedAt: booking.booked_at,
   tripDate: booking.trip_date,
+  completionCode: booking.completion_code,
   city: booking.city,
   slot: booking.slot_label,
   guideId: booking.guide_id,
@@ -329,6 +331,18 @@ const BookingHistory = () => {
                 </span>
               </p>
             </div>
+
+            {canShowGuideContact && activeBooking.completionCode && (
+              <div className="bg-blue-50 rounded-xl p-4 mb-6 space-y-2 border border-blue-100">
+                <p className="text-sm text-blue-700 font-medium">Trip Completion Code</p>
+                <p className="text-slate-800 text-lg font-semibold tracking-[0.25em]">
+                  {activeBooking.completionCode}
+                </p>
+                <p className="text-sm text-gray-600">
+                  Share this code with the guide after the trip. The guide will enter it to mark the trip completed.
+                </p>
+              </div>
+            )}
 
             {/* Buttons */}
             <div className="flex gap-3">

@@ -23,6 +23,7 @@ export const createBooking = async (req, res) => {
       user_id,
       full_name,
       email,
+      phone,
       avatar_url,
       role,
       guide_id,
@@ -50,6 +51,7 @@ export const createBooking = async (req, res) => {
       user_id,
       full_name || "",
       email || "",
+      phone || null,
       avatar_url || "",
       role === "guide" ? "guide" : "tourist",
     ]);

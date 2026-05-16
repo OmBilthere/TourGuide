@@ -7,6 +7,7 @@ import {
   updateMyGuideAvailability,
   getGuideBookings,
   confirmGuideBooking,
+  rejectGuideBooking,
   completeGuideBooking,
 } from "../controllers/guideController.js";
 import { requireAuth } from "../middleware/auth.js";
@@ -30,6 +31,9 @@ router.patch("/me/availability", requireAuth, updateMyGuideAvailability);
 
 //guide can confirm the booking by booking id
 router.patch("/bookings/confirm/:bookingId", requireAuth, confirmGuideBooking);
+
+//guide can reject the booking by booking id
+router.patch("/bookings/reject/:bookingId", requireAuth, rejectGuideBooking);
 
 //guide can complete the booking by booking id
 router.patch("/bookings/complete/:bookingId", requireAuth, completeGuideBooking);

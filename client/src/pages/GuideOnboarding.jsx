@@ -36,6 +36,7 @@ const GuideOnboarding = () => {
     experience_years: "",
     price: "",
     about: "",
+    phone: "",
     languagesCsv: "",
     highlights: [],
     slots: [],
@@ -79,6 +80,7 @@ const GuideOnboarding = () => {
             experience_years: profile.experience_years ? String(profile.experience_years) : "",
             price: profile.price ? String(profile.price) : "",
             about: profile.about || "",
+            phone: profile.phone || "",
             languagesCsv: Array.isArray(profile.languages) ? profile.languages.join(", ") : "",
             highlights: Array.isArray(profile.highlights) ? profile.highlights : [],
             slots: Array.isArray(profile.slots) ? profile.slots : [],
@@ -148,6 +150,7 @@ const GuideOnboarding = () => {
         experience_years: Number(form.experience_years),
         price: Number(form.price),
         about: form.about,
+        phone: form.phone || null,
         languages: parseCsv(form.languagesCsv),
         highlights: mergedHighlights,
         slots: mergedSlots,
@@ -265,6 +268,18 @@ const GuideOnboarding = () => {
               value={form.languagesCsv}
               onChange={handleChange}
               placeholder="Hindi, English, French"
+              className="border border-gray-300 rounded-xl px-4 py-3"
+            />
+          </label>
+
+          <label className="flex flex-col gap-2">
+            <span className="text-sm text-gray-600">Phone / Mobile</span>
+            <input
+              type="tel"
+              name="phone"
+              value={form.phone}
+              onChange={handleChange}
+              placeholder="e.g. +91 91234 56789"
               className="border border-gray-300 rounded-xl px-4 py-3"
             />
           </label>

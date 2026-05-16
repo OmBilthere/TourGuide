@@ -2,6 +2,8 @@ import {
   getGuidesByCityQuery,
   getGuideByIdQuery,
   getGuideBookingsQuery,
+  getGuideBookingForActionQuery,
+  getGuideBookingForCompletionQuery,
   getGuideIdByUserIdQuery,
   getGuideProfileByUserIdQuery,
   getCityIdByNameQuery,
@@ -14,10 +16,14 @@ import {
   insertGuideSlotQuery,
   updateGuideSlotsAvailabilityByGuideIdQuery,
   confirmGuideBookingQuery,
+  rejectGuideBookingQuery,
   completeGuideBookingQuery,
 } from "../queries/guideQueries.js";
 
 import { db } from "../configs/db.js";
+import { updateUserPhoneQuery } from "../queries/userQueries.js";
+import { restoreSlotAvailabilityQuery } from "../queries/bookingQueries.js";
+import crypto from "crypto";
 
 const sanitizeStringArray = (values = []) => {
   if (!Array.isArray(values)) return [];
@@ -121,7 +127,26 @@ export const confirmGuideBooking = async (req, res) => {
       });
     }
 
-    const result = await db.query(confirmGuideBookingQuery, [bookingId, guide.id]);
+    const bookingCheck = await db.query(getGuideBookingForActionQuery, [bookingId, guide.id]);
+    const booking = bookingCheck.rows[0];
+
+    if (!booking) {
+      return res.status(404).json({
+        success: false,
+        message: "Booking not found for this guide",
+      });
+    }
+
+    if (booking.booking_status !== "requested") {
+      return res.status(400).json({
+        success: false,
+        message: "Only requested bookings can be confirmed",
+      });
+    }
+
+    const completionCode = String(crypto.randomInt(100000, 1000000));
+
+    const result = await db.query(confirmGuideBookingQuery, [bookingId, guide.id, completionCode]);
 
     if (result.rows.length === 0) {
       return res.status(404).json({
@@ -133,6 +158,7 @@ export const confirmGuideBooking = async (req, res) => {
     res.status(200).json({
       success: true,
       booking: result.rows[0],
+      completion_code: completionCode,
     });
   } catch (error) {
     console.error("confirm booking error:", error);
@@ -146,6 +172,7 @@ export const confirmGuideBooking = async (req, res) => {
 export const completeGuideBooking = async (req, res) => {
   try {
     const { bookingId } = req.params;
+    const { completion_code } = req.body;
     const authUserId = req.authUser?.clerk_user_id;
 
     if (req.authUser?.role !== "guide") {
@@ -165,7 +192,39 @@ export const completeGuideBooking = async (req, res) => {
       });
     }
 
-    const result = await db.query(completeGuideBookingQuery, [bookingId, guide.id]);
+    const codeValue = String(completion_code || "").trim();
+    if (!codeValue) {
+      return res.status(400).json({
+        success: false,
+        message: "Completion code is required",
+      });
+    }
+
+    const bookingResult = await db.query(getGuideBookingForCompletionQuery, [bookingId, guide.id]);
+    const booking = bookingResult.rows[0];
+
+    if (!booking) {
+      return res.status(404).json({
+        success: false,
+        message: "Booking not found for this guide",
+      });
+    }
+
+    if (booking.booking_status !== "confirmed") {
+      return res.status(400).json({
+        success: false,
+        message: "Booking must be confirmed before completion",
+      });
+    }
+
+    if (String(booking.completion_code || "") !== codeValue) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid completion code",
+      });
+    }
+
+    const result = await db.query(completeGuideBookingQuery, [bookingId, guide.id, codeValue]);
 
     if (result.rows.length === 0) {
       return res.status(404).json({
@@ -239,6 +298,7 @@ export const upsertMyGuideProfile = async (req, res) => {
       price,
       experience_years,
       about,
+      phone,
       languages = [],
       highlights = [],
       slots = [],
@@ -291,6 +351,11 @@ export const upsertMyGuideProfile = async (req, res) => {
         success: false,
         message: "Failed to save guide profile",
       });
+    }
+
+    // update user's phone if provided
+    if (phone && String(phone).trim() !== "") {
+      await client.query(updateUserPhoneQuery, [authUserId, String(phone).trim()]);
     }
 
     await client.query(deleteGuideLanguagesByGuideIdQuery, [guideId]);
@@ -374,5 +439,82 @@ export const updateMyGuideAvailability = async (req, res) => {
       success: false,
       message: "Failed to update availability",
     });
+  }
+};
+
+export const rejectGuideBooking = async (req, res) => {
+  const client = await db.connect();
+
+  try {
+    const { bookingId } = req.params;
+    const authUserId = req.authUser?.clerk_user_id;
+
+    if (req.authUser?.role !== "guide") {
+      return res.status(403).json({
+        success: false,
+        message: "Forbidden: guide access only",
+      });
+    }
+
+    const guideResult = await client.query(getGuideIdByUserIdQuery, [authUserId]);
+    const guide = guideResult.rows[0];
+
+    if (!guide) {
+      return res.status(403).json({
+        success: false,
+        message: "Forbidden: guide profile not found",
+      });
+    }
+
+    await client.query("BEGIN");
+
+    const bookingResult = await client.query(getGuideBookingForActionQuery, [bookingId, guide.id]);
+    const booking = bookingResult.rows[0];
+
+    if (!booking) {
+      await client.query("ROLLBACK");
+      return res.status(404).json({
+        success: false,
+        message: "Booking not found for this guide",
+      });
+    }
+
+    if (booking.booking_status !== "requested") {
+      await client.query("ROLLBACK");
+      return res.status(400).json({
+        success: false,
+        message: "Only requested bookings can be rejected",
+      });
+    }
+
+    const rejectResult = await client.query(rejectGuideBookingQuery, [bookingId, guide.id]);
+
+    if (rejectResult.rows.length === 0) {
+      await client.query("ROLLBACK");
+      return res.status(404).json({
+        success: false,
+        message: "Booking not found for this guide",
+      });
+    }
+
+    if (booking.slot_id) {
+      await client.query(restoreSlotAvailabilityQuery, [booking.slot_id]);
+    }
+
+    await client.query("COMMIT");
+
+    return res.status(200).json({
+      success: true,
+      booking: rejectResult.rows[0],
+    });
+  } catch (error) {
+    await client.query("ROLLBACK");
+    console.error("reject booking error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to reject booking",
+    });
+  } finally {
+    client.release();
   }
 };

@@ -8,6 +8,7 @@ const GuideDashboard = () => {
   const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
 
   const [loading, setLoading] = useState(true);
+  const [profile, setProfile] = useState(null);
   const [stats, setStats] = useState({
     requested: 0,
     confirmed: 0,
@@ -36,6 +37,8 @@ const GuideDashboard = () => {
           ...authHeaders,
           signal: controller.signal,
         });
+
+        setProfile(profileRes.data?.profile || null);
 
         const guideId = profileRes.data?.profile?.id;
         const hasAvailableSlots = profileRes.data?.profile?.has_available_slots;
@@ -110,6 +113,142 @@ const GuideDashboard = () => {
         and keep your availability updated.
       </p>
 
+      <div className="mt-10 rounded-2xl border border-gray-200 bg-white p-6">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <h2 className="text-2xl font-semibold text-slate-800">Your Profile</h2>
+          <button
+            onClick={() => navigate("/guide/profile/edit")}
+            className="px-5 py-2.5 rounded-xl border border-sky-200 text-sky-700 hover:bg-sky-50 transition cursor-pointer"
+          >
+            Edit Profile
+          </button>
+        </div>
+
+        {loading ? (
+          <p className="mt-4 text-gray-500">Loading profile...</p>
+        ) : profile ? (
+          <div className="mt-5 space-y-5 text-sm">
+            <div className="rounded-2xl border border-gray-200 bg-slate-50 p-5">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-5">
+                <div className="relative shrink-0">
+                  <img
+                    src={profile.avatar_url || "https://via.placeholder.com/160?text=Guide"}
+                    alt={profile.name || "Guide profile"}
+                    className="h-28 w-28 rounded-2xl object-cover border border-gray-200 bg-white"
+                  />
+                </div>
+                <div className="flex-1">
+                  <p className="text-gray-500">Guide Photo</p>
+                  <div className="mt-2 flex flex-wrap items-center gap-3">
+                    <p className="text-xl font-semibold text-slate-800">
+                      {profile.name || "Guide"}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={handleAvailabilityToggle}
+                      disabled={updatingAvailability}
+                      className={`px-3 py-1 rounded-full text-sm font-medium ${
+                        guideAvailable
+                          ? "bg-emerald-100 text-emerald-700"
+                          : "bg-amber-100 text-amber-700"
+                      } ${updatingAvailability ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`}
+                    >
+                      {updatingAvailability
+                        ? "Updating..."
+                        : guideAvailable
+                        ? "Available"
+                        : "Not Available"}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-5">
+              <div className="rounded-2xl border border-gray-200 bg-slate-50 p-5">
+                <p className="text-gray-500">City</p>
+                <p className="mt-1 text-lg font-semibold text-slate-800">{profile.city || "N/A"}</p>
+              </div>
+              <div className="rounded-2xl border border-gray-200 bg-slate-50 p-5">
+                <p className="text-gray-500">Speciality</p>
+                <p className="mt-1 text-lg font-semibold text-slate-800">
+                  {profile.speciality || "N/A"}
+                </p>
+              </div>
+              <div className="rounded-2xl border border-gray-200 bg-slate-50 p-5">
+                <p className="text-gray-500">Experience</p>
+                <p className="mt-1 text-lg font-semibold text-slate-800">
+                  {profile.experience_years ?? "N/A"} years
+                </p>
+              </div>
+              <div className="rounded-2xl border border-gray-200 bg-slate-50 p-5">
+                <p className="text-gray-500">Price</p>
+                <p className="mt-1 text-lg font-semibold text-slate-800">
+                  INR {profile.price ?? 0}
+                </p>
+              </div>
+              <div className="rounded-2xl border border-gray-200 bg-slate-50 p-5">
+                <p className="text-gray-500">Phone</p>
+                <p className="mt-1 text-lg font-semibold text-slate-800">
+                  {profile.phone || "Not added"}
+                </p>
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-gray-200 bg-slate-50 p-5">
+              <p className="text-gray-500">About</p>
+              <p className="mt-1 text-slate-700 leading-7">
+                {profile.about || "No description added yet."}
+              </p>
+            </div>
+            <div className="rounded-2xl border border-gray-200 bg-slate-50 p-5">
+              <p className="text-gray-500">Languages</p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {(profile.languages || []).length > 0 ? (
+                  profile.languages.map((item) => (
+                    <span key={item} className="px-3 py-1 rounded-full bg-white border text-gray-700">
+                      {item}
+                    </span>
+                  ))
+                ) : (
+                  <span className="text-gray-500">No languages added</span>
+                )}
+              </div>
+            </div>
+            <div className="rounded-2xl border border-gray-200 bg-slate-50 p-5">
+              <p className="text-gray-500">Highlights</p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {(profile.highlights || []).length > 0 ? (
+                  profile.highlights.map((item) => (
+                    <span key={item} className="px-3 py-1 rounded-full bg-white border text-gray-700">
+                      {item}
+                    </span>
+                  ))
+                ) : (
+                  <span className="text-gray-500">No highlights added</span>
+                )}
+              </div>
+            </div>
+            <div className="rounded-2xl border border-gray-200 bg-slate-50 p-5 md:col-span-2">
+              <p className="text-gray-500">Slots</p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {(profile.slots || []).length > 0 ? (
+                  profile.slots.map((item) => (
+                    <span key={item} className="px-3 py-1 rounded-full bg-white border text-gray-700">
+                      {item}
+                    </span>
+                  ))
+                ) : (
+                  <span className="text-gray-500">No slots added</span>
+                )}
+              </div>
+            </div>
+          </div>
+        ) : (
+          <p className="mt-4 text-gray-500">No profile found. Please complete your guide profile.</p>
+        )}
+      </div>
+
       <div className="grid md:grid-cols-3 gap-5 mt-10">
         <div className="rounded-2xl border border-blue-100 bg-blue-50 p-6">
           <p className="text-sm text-gray-500">Pending Requests</p>
@@ -125,39 +264,6 @@ const GuideDashboard = () => {
           <p className="text-sm text-gray-500">Completed Tours</p>
           <p className="text-3xl font-semibold text-slate-800 mt-2">{loading ? "--" : stats.completed}</p>
         </div>
-      </div>
-
-      <div className="mt-10 rounded-2xl border border-gray-200 bg-white p-6">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <h2 className="text-2xl font-semibold text-slate-800">Availability Status</h2>
-          <span
-            className={`px-3 py-1 rounded-full text-sm font-medium ${
-              guideAvailable
-                ? "bg-emerald-100 text-emerald-700"
-                : "bg-amber-100 text-amber-700"
-            }`}
-          >
-            {guideAvailable ? "Available" : "Not Available"}
-          </span>
-        </div>
-        <p className="text-gray-600 mt-3">
-          If you are not available, mark yourself unavailable to stop new slot bookings.
-        </p>
-        <button
-          onClick={handleAvailabilityToggle}
-          disabled={updatingAvailability}
-          className={`mt-4 px-6 py-3 rounded-xl text-white transition cursor-pointer ${
-            guideAvailable
-              ? "bg-amber-500 hover:bg-amber-600"
-              : "bg-emerald-500 hover:bg-emerald-600"
-          } ${updatingAvailability ? "opacity-50 cursor-not-allowed" : ""}`}
-        >
-          {updatingAvailability
-            ? "Updating..."
-            : guideAvailable
-            ? "Mark Not Available"
-            : "Mark Available"}
-        </button>
       </div>
 
       <div className="mt-10 rounded-2xl border border-gray-200 bg-white p-6">
