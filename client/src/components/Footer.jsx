@@ -1,12 +1,11 @@
 import React from 'react'
-import { assets } from '../assets/assets'
-
+import logo from '../assets/logo.png'
 const Footer = () => {
   return (
    <footer className="px-6 md:px-16 lg:px-24 xl:px-32 mt-20">
     <div className="flex flex-col md:flex-row items-start justify-between gap-10 py-10 border-b border-gray-500/30 text-gray-500">
         <div>
-            <img className="w-34 md:w-32" src={assets.logo} alt="logo" />
+            <img className="w-34 md:w-32" src={logo} alt="logo" />
             <p className="max-w-[410px] mt-6">Your trusted partner for all your Destination tours. <br />Building unforgettable experiences for you and your loved ones.</p>
         </div>
         <div className="flex flex-wrap justify-between w-full md:w-[45%] gap-5">

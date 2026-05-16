@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { assets } from '../assets/assets'
+import logo from '../assets/logo.png'
 import { useNavigate, NavLink } from 'react-router-dom'
 import { ArrowRight, Menu, X } from 'lucide-react'
 import { useClerk, useUser, UserButton } from '@clerk/clerk-react'
@@ -107,7 +107,7 @@ const Navbar = () => {
       <div className='fixed z-50 w-full backdrop-blur-2xl flex justify-between items-center px-4 py-3 sm:px-20 xl:px-32 border-b border-gray-400 '>
         {/* Logo */}
         <img
-          src={assets.logo}
+          src={logo}
           className='w-32 sm:w-44 cursor-pointer rounded-lg'
           alt='logo'
           onClick={() => navigate('/')}

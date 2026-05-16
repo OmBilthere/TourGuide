@@ -1,4 +1,5 @@
-import { assets } from "../assets/assets";
+import star_icon from "../assets/star_icon.svg";
+import star_dull_icon from "../assets/star_dull_icon.svg";
 
 const Testimonial = () => {
     
@@ -38,7 +39,7 @@ const Testimonial = () => {
                         <div className="flex items-center gap-1">
                            {
                             Array(5).fill(0).map((_, index) => (<img className="w-4 h-4" alt=""
-                                 key={index} src={index < testimonial.rating ? assets.star_icon : assets.star_dull_icon} />))
+                                 key={index} src={index < testimonial.rating ? star_icon : star_dull_icon} />))
                            }
                         </div>
                         <p className='text-gray-500 text-sm my-5'>"{testimonial.content}"</p>

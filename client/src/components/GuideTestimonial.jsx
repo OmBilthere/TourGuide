@@ -1,4 +1,6 @@
-import { assets } from "../assets/assets";
+
+import star_icon from "../assets/star_icon.svg";
+import star_dull_icon from "../assets/star_dull_icon.svg";
 
 const GuideTestimonial = () => {
   const guideStories = [
@@ -51,7 +53,7 @@ const GuideTestimonial = () => {
                     className="w-4 h-4"
                     alt=""
                     key={itemIndex}
-                    src={itemIndex < story.rating ? assets.star_icon : assets.star_dull_icon}
+                    src={itemIndex < story.rating ? star_icon : star_dull_icon}
                   />
                 ))}
             </div>
