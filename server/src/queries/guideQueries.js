@@ -147,6 +147,114 @@ WHERE user_id = $1
 LIMIT 1;
 `;
 
+export const getGuideProfileByUserIdQuery = `
+SELECT
+    g.id,
+    g.user_id,
+    c.city_name AS city,
+    g.speciality,
+    g.price,
+    g.experience_years,
+    g.about,
+    COALESCE(
+      ARRAY_AGG(DISTINCT gl.language_name)
+      FILTER (WHERE gl.language_name IS NOT NULL),
+      '{}'
+    ) AS languages,
+    COALESCE(
+      ARRAY_AGG(DISTINCT gh.title)
+      FILTER (WHERE gh.title IS NOT NULL),
+      '{}'
+    ) AS highlights,
+    COALESCE(
+      ARRAY_AGG(DISTINCT gs.slot_label)
+      FILTER (WHERE gs.slot_label IS NOT NULL),
+      '{}'
+    ) AS slots,
+    COALESCE(BOOL_OR(gs.is_available), false) AS has_available_slots
+FROM guides g
+JOIN cities c ON g.city_id = c.id
+LEFT JOIN guide_languages gl ON g.id = gl.guide_id
+LEFT JOIN guide_highlights gh ON g.id = gh.guide_id
+LEFT JOIN guide_slots gs ON g.id = gs.guide_id
+WHERE g.user_id = $1
+GROUP BY
+    g.id,
+    g.user_id,
+    c.city_name,
+    g.speciality,
+    g.price,
+    g.experience_years,
+    g.about
+LIMIT 1;
+`;
+
+export const updateGuideSlotsAvailabilityByGuideIdQuery = `
+UPDATE guide_slots
+SET is_available = $2
+WHERE guide_id = $1;
+`;
+
+export const getCityIdByNameQuery = `
+SELECT id
+FROM cities
+WHERE LOWER(city_name) = LOWER($1)
+LIMIT 1;
+`;
+
+export const upsertGuideByUserIdQuery = `
+WITH updated AS (
+  UPDATE guides
+  SET
+    city_id = $2,
+    speciality = $3,
+    price = $4,
+    experience_years = $5,
+    about = $6
+  WHERE user_id = $1
+  RETURNING id
+),
+inserted AS (
+  INSERT INTO guides (user_id, city_id, speciality, price, experience_years, about)
+  SELECT $1, $2, $3, $4, $5, $6
+  WHERE NOT EXISTS (SELECT 1 FROM updated)
+  RETURNING id
+)
+SELECT id FROM updated
+UNION ALL
+SELECT id FROM inserted;
+`;
+
+export const deleteGuideLanguagesByGuideIdQuery = `
+DELETE FROM guide_languages
+WHERE guide_id = $1;
+`;
+
+export const insertGuideLanguageQuery = `
+INSERT INTO guide_languages (guide_id, language_name)
+VALUES ($1, $2);
+`;
+
+export const deleteGuideHighlightsByGuideIdQuery = `
+DELETE FROM guide_highlights
+WHERE guide_id = $1;
+`;
+
+export const insertGuideHighlightQuery = `
+INSERT INTO guide_highlights (guide_id, title)
+VALUES ($1, $2);
+`;
+
+export const deleteGuideSlotsByGuideIdQuery = `
+DELETE FROM guide_slots
+WHERE guide_id = $1;
+`;
+
+export const insertGuideSlotQuery = `
+INSERT INTO guide_slots (guide_id, slot_label, is_available)
+VALUES ($1, $2, true);
+`;
+
 export const confirmGuideBookingQuery = `
 UPDATE bookings
 SET booking_status = 'confirmed'

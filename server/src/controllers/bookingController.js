@@ -4,7 +4,6 @@ import Razorpay from "razorpay";
 
 import {
   createBookingQuery,
-  updateSlotAvailabilityQuery,
   getBookingHistoryQuery,
   getBookingForPaymentQuery,
   getBookingOwnerQuery,
@@ -32,6 +31,13 @@ export const createBooking = async (req, res) => {
       amount,
       trip_date,
     } = req.body;
+
+    if (!slot_id) {
+      return res.status(400).json({
+        success: false,
+        message: "Please select a slot before booking",
+      });
+    }
     
     if (authUserId !== user_id) {
       return res.status(403).json({
@@ -57,7 +63,12 @@ export const createBooking = async (req, res) => {
       trip_date,
     ]);
 
-    await db.query(updateSlotAvailabilityQuery, [slot_id]);
+    if (bookingResult.rows.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Selected slot is unavailable. Please choose another slot",
+      });
+    }
 
     res.status(201).json({
       success: true,

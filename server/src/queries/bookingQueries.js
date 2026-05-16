@@ -1,4 +1,12 @@
 export const createBookingQuery = `
+WITH reserved_slot AS (
+    UPDATE guide_slots
+    SET is_available = false
+    WHERE id = $4
+      AND guide_id = $2
+      AND is_available = true
+    RETURNING id
+)
 INSERT INTO bookings (
     user_id,
     guide_id,
@@ -9,14 +17,9 @@ INSERT INTO bookings (
     amount,
     trip_date
 )
-VALUES ($1, $2, $3, $4, 'requested', 'pending', $5, $6)
+SELECT $1, $2, $3, reserved_slot.id, 'requested', 'pending', $5, $6
+FROM reserved_slot
 RETURNING *;
-`;
-
-export const updateSlotAvailabilityQuery = `
-UPDATE guide_slots
-SET is_available = false
-WHERE id = $1;
 `;
 
 
@@ -36,8 +39,14 @@ SELECT
     g.id AS guide_id,
     u.full_name AS guide_name,
     u.avatar_url AS guide_image,
-    u.email AS guide_email,
-    NULL::text AS guide_number,
+        CASE
+            WHEN b.payment_status = 'paid' THEN u.email
+            ELSE NULL
+        END AS guide_email,
+        CASE
+            WHEN b.payment_status = 'paid' THEN NULL::text
+            ELSE NULL
+        END AS guide_number,
     g.speciality,
     g.price
 

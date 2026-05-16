@@ -2,6 +2,9 @@ import express from "express";
 import {
   getGuidesByCity,
   getGuideById,
+  getMyGuideProfile,
+  upsertMyGuideProfile,
+  updateMyGuideAvailability,
   getGuideBookings,
   confirmGuideBooking,
   completeGuideBooking,
@@ -15,6 +18,15 @@ router.get("/", getGuidesByCity);
 
 // guide bookings management routes used to show guide all bookings
 router.get("/bookings/:guideId", requireAuth, getGuideBookings);
+
+// get currently logged-in guide profile
+router.get("/me/profile", requireAuth, getMyGuideProfile);
+
+// create or update currently logged-in guide profile
+router.put("/me/profile", requireAuth, upsertMyGuideProfile);
+
+// update currently logged-in guide availability
+router.patch("/me/availability", requireAuth, updateMyGuideAvailability);
 
 //guide can confirm the booking by booking id
 router.patch("/bookings/confirm/:bookingId", requireAuth, confirmGuideBooking);

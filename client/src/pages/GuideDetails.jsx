@@ -132,6 +132,9 @@ const GuideDetails = () => {
     }
   };
 
+  const hasAvailableSlots = Array.isArray(guide.availableSlots) && guide.availableSlots.some((slot) => slot.is_available !== false);
+  const canSendBookingRequest = !loading && Boolean(selectedSlot) && hasAvailableSlots;
+
   return (
     <div className="px-4 sm:px-20 xl:px-32 py-20">
       {/* Hero */}
@@ -150,6 +153,12 @@ const GuideDetails = () => {
           <p className="text-gray-500 mt-3">
             ⭐ {guide.rating}
           </p>
+
+          {!hasAvailableSlots && (
+            <div className="mt-4 inline-flex items-center rounded-full bg-rose-100 text-rose-700 px-4 py-2 text-sm font-medium">
+              Guide is not available right now
+            </div>
+          )}
 
           <div className="space-y-2 mt-6 text-gray-600">
             <p><strong>City:</strong> {guide.city}</p>
@@ -182,6 +191,11 @@ const GuideDetails = () => {
       {/* Slots */}
       <div className="mt-16">
         <h2 className="text-3xl font-semibold text-slate-800">Select Slot</h2>
+        {!hasAvailableSlots && (
+          <p className="text-sm text-rose-600 mt-3">
+            This guide is currently unavailable. Please try another guide or come back later.
+          </p>
+        )}
         <div className="flex flex-wrap gap-4 mt-6">
           {guide.availableSlots && guide.availableSlots.length > 0 ? (
             guide.availableSlots.map((slot, index) => {
@@ -216,13 +230,19 @@ const GuideDetails = () => {
       <div className="mt-16">
         <button
           onClick={handleSendRequest}
-          disabled={loading}
+          disabled={!canSendBookingRequest}
           className={`px-8 py-4 bg-blue-400 rounded-2xl cursor-pointer transition ${
-            loading ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-500"
+            canSendBookingRequest ? "hover:bg-blue-500" : "opacity-50 cursor-not-allowed"
           }`}
         >
           {loading ? "Sending..." : "Send Booking Request"}
         </button>
+        {!selectedSlot && hasAvailableSlots && (
+          <p className="text-sm text-amber-600 mt-3">Please select one slot to continue.</p>
+        )}
+        {!hasAvailableSlots && (
+          <p className="text-sm text-rose-600 mt-3">Booking is disabled because guide is not available.</p>
+        )}
       </div>
     </div>
   );

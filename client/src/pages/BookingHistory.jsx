@@ -11,6 +11,24 @@ const statusStyles = {
   completed: "bg-blue-100 text-blue-700",
 };
 
+const mapBooking = (booking) => ({
+  id: booking.id,
+  status: booking.booking_status,
+  paymentStatus: booking.payment_status,
+  amount: booking.amount,
+  bookedAt: booking.booked_at,
+  tripDate: booking.trip_date,
+  city: booking.city,
+  slot: booking.slot_label,
+  guideId: booking.guide_id,
+  guideName: booking.guide_name,
+  guideImage: booking.guide_image,
+  guideEmail: booking.guide_email,
+  guidePhone: booking.guide_number,
+  guideSpeciality: booking.speciality,
+  price: booking.price,
+});
+
 const BookingHistory = () => {
 
   const navigate = useNavigate();
@@ -26,50 +44,39 @@ const BookingHistory = () => {
     },
   });
 
+  const fetchBookings = async (signal) => {
+    if (!user?.id) return;
+
+    const res = await axios.get(
+      `${API_BASE}/api/bookings/history/${user.id}`,
+      {
+        signal,
+        ...getAuthHeaders(),
+      }
+    );
+
+    const mappedBookings = (res.data.bookings || []).map(mapBooking);
+    setBookings(mappedBookings);
+  };
+
 
   useEffect(() => {
     if (!isLoaded || !user?.id) return;
 
     const controller = new AbortController();
 
-    const fetchBookings = async () => {
+    const loadBookings = async () => {
       try {
-        const res = await axios.get(
-          `${API_BASE}/api/bookings/history/${user.id}`,
-          {
-            signal: controller.signal,
-            ...getAuthHeaders(),
-          }
-        );
-
-        const mappedBookings = (res.data.bookings || []).map((booking) => ({
-          id: booking.id,
-          status: booking.booking_status,
-          paymentStatus: booking.payment_status,
-          amount: booking.amount,
-          bookedAt: booking.booked_at,
-          tripDate: booking.trip_date, 
-          city: booking.city,
-          slot: booking.slot_label,
-          guideId: booking.guide_id,
-          guideName: booking.guide_name,
-          guideImage: booking.guide_image,
-          guideEmail: booking.guide_email,
-          guidePhone: booking.guide_number,
-          guideSpeciality: booking.speciality,
-          price: booking.price,
-        }));
-
-        setBookings(mappedBookings);
+        await fetchBookings(controller.signal);
       } catch (error) {
         const isCanceled = error.name === "CanceledError" || axios.isCancel?.(error);
         if (!isCanceled) console.error("Error fetching bookings:", error);
       }
     };
 
-    fetchBookings();
+    loadBookings();
     return () => controller.abort();
-  }, [isLoaded, user?.id])
+  }, [isLoaded, user?.id]);
 
   const handleCancelBooking = async (id) => {
     try {
@@ -130,12 +137,7 @@ const BookingHistory = () => {
 
             if (verifyRes.data?.success) {
               toast.success("Payment successful!");
-              setBookings((prev) =>
-                prev.map((b) =>
-                  b.id === booking.id ? { ...b, paymentStatus: "paid" } : b
-                )
-              );
-              setActiveModal(null);
+              await fetchBookings();
             } else {
               toast.error(verifyRes.data?.message || "Payment verification failed");
             }
@@ -155,6 +157,7 @@ const BookingHistory = () => {
   };
 
   const activeBooking = bookings.find((b) => b.id === activeModal);
+  const canShowGuideContact = activeBooking?.paymentStatus === "paid";
 
   if (bookings.length === 0) {
     return (
@@ -162,7 +165,7 @@ const BookingHistory = () => {
         <p className="text-2xl font-semibold">No bookings yet</p>
         <button
           onClick={() => navigate("/Explore")}
-          className="mt-6 px-6 py-3 bg-blue-400 text-white rounded-xl"
+          className="mt-6 px-6 py-3 bg-blue-400 text-white rounded-xl cursor-pointer"
         >
           Explore Guides
         </button>
@@ -230,7 +233,7 @@ const BookingHistory = () => {
               {booking.status === "confirmed" && (
                 <button
                   onClick={() => setActiveModal(booking.id)}
-                  className="px-5 py-2 bg-green-500 text-white rounded-xl text-sm hover:bg-green-600 transition"
+                  className="px-5 py-2 bg-green-500 text-white rounded-xl text-sm hover:bg-green-600 transition cursor-pointer"
                 >
                   View Detail
                 </button>
@@ -238,7 +241,7 @@ const BookingHistory = () => {
               {booking.status === "requested" && (
                 <button
                   onClick={() => handleCancelBooking(booking.id)}
-                  className="px-5 py-2 border border-red-400 text-red-500 rounded-xl text-sm hover:bg-red-50 transition"
+                  className="px-5 py-2 border border-red-400 text-red-500 rounded-xl text-sm hover:bg-red-50 transition cursor-pointer"
                 >
                   Cancel trip
                 </button>
@@ -249,7 +252,7 @@ const BookingHistory = () => {
                     `/Explore/${(booking.city || "").toLowerCase()}/guide/${booking.guideId}`
                   )
                 }
-                className="px-5 py-2 bg-blue-400 text-white rounded-xl text-sm hover:bg-blue-500 transition"
+                className="px-5 py-2 bg-blue-400 text-white rounded-xl text-sm hover:bg-blue-500 transition cursor-pointer"
               >
                 View Guide
               </button>
@@ -288,8 +291,16 @@ const BookingHistory = () => {
               <p className="text-sm text-gray-500 font-medium">
                 Contact Details
               </p>
-              <p className="text-slate-800">📞 {activeBooking.guidePhone}</p>
-              <p className="text-slate-800">✉️ {activeBooking.guideEmail}</p>
+              {canShowGuideContact ? (
+                <>
+                  <p className="text-slate-800">📞 {activeBooking.guidePhone || "Not available"}</p>
+                  <p className="text-slate-800">✉️ {activeBooking.guideEmail || "Not available"}</p>
+                </>
+              ) : (
+                <p className="text-amber-700 text-sm">
+                  Contact details unlock after successful payment.
+                </p>
+              )}
             </div>
 
             {/* Booking Details */}
@@ -324,7 +335,7 @@ const BookingHistory = () => {
               {activeBooking.paymentStatus !== "paid" && (
                 <button
                   onClick={() => handlePayment(activeBooking)}
-                  className="flex-1 py-3 bg-blue-400 text-white rounded-xl font-medium hover:bg-blue-500 transition"
+                  className="flex-1 py-3 bg-blue-400 text-white rounded-xl font-medium hover:bg-blue-500 transition cursor-pointer"
                 >
                   Pay Now ₹{activeBooking.amount}
                 </button>
