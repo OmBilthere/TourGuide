@@ -13,6 +13,7 @@ const GuideDetails = () => {
   const [cityId, setCityId] = useState(null);
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [reviews, setReviews] = useState([]);
     
   const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
 
@@ -30,6 +31,16 @@ const GuideDetails = () => {
         // Fetch city info to get city_id
         const citiesRes = await axios.get(`${API_BASE}/api/cities/${encodeURIComponent(cityName)}`, { signal: controller.signal });
         const cityData = citiesRes.data?.city;
+        
+        // Fetch reviews for the guide (non-blocking)
+        try {
+          const reviewsRes = await axios.get(`${API_BASE}/api/reviews/guide/${guideId}`, { signal: controller.signal });
+          if (reviewsRes.data?.reviews) {
+            setReviews(reviewsRes.data.reviews);
+          }
+        } catch (reviewError) {
+          // Reviews fetch failure is non-critical
+        }
         
         if (cityData?.id) {
           setCityId(cityData.id);
@@ -150,9 +161,21 @@ const GuideDetails = () => {
             {guide.name}
           </h1>
 
-          <p className="text-gray-500 mt-3">
-            ⭐ {guide.rating}
-          </p>
+          <div className="flex items-center gap-2 mt-3">
+            <div className="flex">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <span
+                  key={star}
+                  className={`text-xl ${
+                    star <= Math.round(guide.rating) ? "text-yellow-400" : "text-gray-300"
+                  }`}
+                >
+                  ★
+                </span>
+              ))}
+            </div>
+            <p className="text-gray-500 text-sm">({guide.rating})</p>
+          </div>
 
           {!hasAvailableSlots && (
             <div className="mt-4 inline-flex items-center rounded-full bg-rose-100 text-rose-700 px-4 py-2 text-sm font-medium">
@@ -244,6 +267,56 @@ const GuideDetails = () => {
           <p className="text-sm text-rose-600 mt-3">Booking is disabled because guide is not available.</p>
         )}
       </div>
+
+      {/* Reviews Section */}
+      {reviews.length > 0 && (
+        <div className="mt-16">
+          <h2 className="text-3xl font-semibold text-slate-800">Reviews ({reviews.length})</h2>
+          <div className="flex flex-col gap-4 mt-6">
+            {reviews.map((review) => (
+              <div
+                key={review.id}
+                className="border border-gray-200 rounded-lg p-5 bg-gray-50"
+              >
+                <div className="flex items-start justify-between">
+                  <div className="flex items-center gap-3">
+                    <img
+                      src={review.avatar_url || "https://via.placeholder.com/40"}
+                      alt={review.user_name}
+                      className="w-10 h-10 rounded-full object-cover"
+                    />
+                    <div>
+                      <p className="font-medium text-slate-800">{review.user_name || "Anonymous"}</p>
+                      <p className="text-xs text-gray-500">
+                        {review.created_at
+                          ? new Date(review.created_at).toLocaleDateString("en-IN", {
+                              year: "numeric",
+                              month: "short",
+                              day: "numeric",
+                            })
+                          : ""}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <span
+                        key={star}
+                        className={`text-lg ${
+                          star <= review.rating ? "text-yellow-400" : "text-gray-300"
+                        }`}
+                      >
+                        ★
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                <p className="text-gray-600 text-sm mt-3">{review.review_text}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

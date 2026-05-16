@@ -32,6 +32,7 @@ SELECT
     b.booked_at,
     b.trip_date,
     b.completion_code,
+    b.user_id,
 
     c.city_name AS city,
 

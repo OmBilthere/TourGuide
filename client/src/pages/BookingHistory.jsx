@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import axios from "axios";
 import { useUser } from "@clerk/clerk-react";
+import ReviewModal from "../components/ReviewModal";
 
 const statusStyles = {
   requested: "bg-yellow-100 text-yellow-700",
@@ -23,6 +24,7 @@ const mapBooking = (booking) => ({
   city: booking.city,
   slot: booking.slot_label,
   guideId: booking.guide_id,
+  userId: booking.user_id,
   guideName: booking.guide_name,
   guideImage: booking.guide_image,
   guideEmail: booking.guide_email,
@@ -36,6 +38,7 @@ const BookingHistory = () => {
   const navigate = useNavigate();
   const [bookings, setBookings] = useState([]);
   const [activeModal, setActiveModal] = useState(null);
+  const [reviewModal, setReviewModal] = useState(null);
   const { user, isLoaded } = useUser();
 
   const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
@@ -240,6 +243,14 @@ const BookingHistory = () => {
                   View Detail
                 </button>
               )}
+              {booking.status === "completed" && (
+                <button
+                  onClick={() => setReviewModal(booking.id)}
+                  className="px-5 py-2 bg-amber-500 text-white rounded-xl text-sm hover:bg-amber-600 transition cursor-pointer"
+                >
+                  Leave Review
+                </button>
+              )}
               {booking.status === "requested" && (
                 <button
                   onClick={() => handleCancelBooking(booking.id)}
@@ -262,6 +273,15 @@ const BookingHistory = () => {
           </div>
         ))}
       </div>
+
+      {/* Review Modal */}
+      {reviewModal && bookings.find((b) => b.id === reviewModal) && (
+        <ReviewModal
+          booking={bookings.find((b) => b.id === reviewModal)}
+          onClose={() => setReviewModal(null)}
+          onSuccess={() => fetchBookings()}
+        />
+      )}
 
       {/* Contact + Payment Modal */}
       {activeModal && activeBooking && (

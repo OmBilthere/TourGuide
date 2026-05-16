@@ -9,6 +9,7 @@ const GuideDashboard = () => {
 
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState(null);
+  const [reviews, setReviews] = useState([]);
   const [stats, setStats] = useState({
     requested: 0,
     confirmed: 0,
@@ -68,6 +69,18 @@ const GuideDashboard = () => {
         );
 
         setStats(nextStats);
+
+        // Fetch reviews for this guide
+        try {
+          const reviewsRes = await axios.get(`${API_BASE}/api/reviews/guide/${guideId}`, {
+            signal: controller.signal,
+          });
+          if (reviewsRes.data?.reviews) {
+            setReviews(reviewsRes.data.reviews);
+          }
+        } catch (reviewError) {
+          console.log("Reviews fetch error (non-critical):", reviewError.message);
+        }
       } catch (error) {
         const isCanceled = error.name === "CanceledError" || axios.isCancel?.(error);
         if (!isCanceled) {
@@ -267,27 +280,54 @@ const GuideDashboard = () => {
       </div>
 
       <div className="mt-10 rounded-2xl border border-gray-200 bg-white p-6">
-        <h2 className="text-2xl font-semibold text-slate-800">Quick Actions</h2>
-        <div className="flex flex-wrap gap-4 mt-5">
-          <button
-            onClick={() => navigate("/guide/bookings")}
-            className="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-xl transition cursor-pointer"
-          >
-            Open Guide Bookings
-          </button>
-          <button
-            onClick={() => navigate("/guide/profile/edit")}
-            className="px-6 py-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl transition cursor-pointer"
-          >
-            Update Profile
-          </button>
-          <button
-            onClick={() => navigate("/Explore")}
-            className="px-6 py-3 border border-gray-300 hover:bg-gray-50 text-slate-700 rounded-xl transition cursor-pointer"
-          >
-            Explore Cities
-          </button>
-        </div>
+        <h2 className="text-2xl font-semibold text-slate-800">Your Reviews ({reviews.length})</h2>
+        {reviews.length > 0 ? (
+          <div className="flex flex-col gap-4 mt-6">
+            {reviews.map((review) => (
+              <div
+                key={review.id}
+                className="border border-gray-200 rounded-lg p-5 bg-gray-50"
+              >
+                <div className="flex items-start justify-between">
+                  <div className="flex items-center gap-3">
+                    <img
+                      src={review.avatar_url || "https://via.placeholder.com/40"}
+                      alt={review.user_name}
+                      className="w-10 h-10 rounded-full object-cover"
+                    />
+                    <div>
+                      <p className="font-medium text-slate-800">{review.user_name || "Anonymous"}</p>
+                      <p className="text-xs text-gray-500">
+                        {review.created_at
+                          ? new Date(review.created_at).toLocaleDateString("en-IN", {
+                              year: "numeric",
+                              month: "short",
+                              day: "numeric",
+                            })
+                          : ""}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <span
+                        key={star}
+                        className={`text-lg ${
+                          star <= review.rating ? "text-yellow-400" : "text-gray-300"
+                        }`}
+                      >
+                        ★
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                <p className="text-gray-600 text-sm mt-3">{review.review_text}</p>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-gray-500 mt-4">No reviews yet. Keep up the great work!</p>
+        )}
       </div>
     </div>
   );

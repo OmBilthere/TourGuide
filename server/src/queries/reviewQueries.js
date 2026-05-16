@@ -10,6 +10,23 @@ VALUES ($1, $2, $3, $4, $5)
 RETURNING *;
 `;
 
+export const getReviewsByGuideQuery = `
+SELECT 
+    r.id,
+    r.booking_id,
+    r.user_id,
+    r.guide_id,
+    r.rating,
+    r.review_text,
+    r.created_at,
+    u.full_name as user_name,
+    u.avatar_url
+FROM reviews r
+JOIN users u ON r.user_id = u.clerk_user_id
+WHERE r.guide_id = $1
+ORDER BY r.created_at DESC;
+`;
+
 export const updateGuideRatingQuery = `
 UPDATE guides
 SET

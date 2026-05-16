@@ -1,6 +1,7 @@
 import { db } from "../configs/db.js";
 import {
   createReviewQuery,
+  getReviewsByGuideQuery,
   updateGuideRatingQuery,
 } from "../queries/reviewQueries.js";
 
@@ -33,6 +34,25 @@ export const createReview = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Failed to create review",
+    });
+  }
+};
+
+export const getReviewsByGuide = async (req, res) => {
+  try {
+    const { guideId } = req.params;
+
+    const result = await db.query(getReviewsByGuideQuery, [guideId]);
+
+    res.status(200).json({
+      success: true,
+      reviews: result.rows || [],
+    });
+  } catch (error) {
+    console.error("get reviews error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch reviews",
     });
   }
 };
