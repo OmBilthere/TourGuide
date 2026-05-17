@@ -57,60 +57,78 @@ const Explore = () => {
   
 
   return (
-    <div className="px-4 sm:px-20 xl:px-32 py-20">
-      <div>
-        <h1 className="text-4xl font-semibold text-slate-800">
-          Search Your City
-        </h1>
-        <p className="text-gray-500 mt-3">
-          Find the city you want to explore.
-        </p>
-
-        <div className="mt-8">
-          <input
-            type="text"
-            placeholder="Search city..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleSearchSubmit()}
-            className="w-full border rounded-xl px-4 py-3 outline-none"
-          />
-
-            {searchTerm.trim() && (
-        <div className="mt-16">
-          <h2 className="text-3xl font-semibold text-slate-800">
-            Search Results
-          </h2>
-          <p className="text-gray-500 mt-2">
-            Cities matching your search.
+    <div className="w-full">
+      {/* Hero Section */}
+      <div className="px-4 sm:px-20 xl:px-32 py-16 sm:py-20 min-h-[45vh] flex flex-col justify-center items-center">
+        <div className="text-center max-w-3xl">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-semibold text-slate-900 leading-tight mb-4">
+            Explore Amazing <span className="text-sky-500">Destinations</span>
+          </h1>
+          <p className="text-base sm:text-lg text-slate-600 mb-10">
+            Search and discover incredible cities. Find local guides ready to show you authentic experiences.
           </p>
 
+          {/* Premium Search Bar */}
+          <div className="flex flex-col sm:flex-row gap-2 max-w-2xl mx-auto w-full">
+            <input
+              type="text"
+              placeholder="Search for cities, landmarks..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleSearchSubmit()}
+              className="flex-1 px-6 py-3 rounded-lg border border-slate-200 bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-transparent transition w-full"
+            />
+            <button
+              onClick={handleSearchSubmit}
+              className="px-8 py-3 bg-sky-500 text-white rounded-lg font-medium hover:bg-sky-600 active:scale-95 transition cursor-pointer w-full sm:w-auto"
+            >
+              Search
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Search Results Section */}
+      {searchTerm.trim() && (
+        <div className="px-4 sm:px-20 xl:px-32 py-16 bg-gradient-to-b from-sky-50 to-white">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-semibold text-slate-900 mb-3">Search Results</h2>
+            <p className="text-slate-600">
+              {filteredCities.length > 0 
+                ? `Found ${filteredCities.length} ${filteredCities.length === 1 ? 'city' : 'cities'} matching your search`
+                : 'No cities found matching your search'}
+            </p>
+          </div>
+
           {filteredCities.length > 0 ? (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mt-8">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
               {filteredCities.map((city, index) => (
                 <CityCard key={`search-${city.city}-${index}`} city={city} />
               ))}
             </div>
           ) : (
-            <p className="text-gray-500 mt-6">No city found.</p>
+            <div className="text-center py-16">
+              <p className="text-slate-500 text-lg">Try searching with different keywords</p>
+            </div>
           )}
         </div>
       )}
+
+      {/* Top Cities Section */}
+      <div className={`px-4 sm:px-20 xl:px-32 py-20 ${searchTerm.trim() ? 'bg-white' : ''}`}>
+        <div className="text-center mb-12">
+          <h2 className="text-4xl font-semibold text-slate-900 mb-3">Top Cities</h2>
+          <p className="text-slate-600 max-w-2xl mx-auto">
+            Discover our most popular destinations with the highest-rated local guides ready to share their expertise.
+          </p>
         </div>
-      </div>
 
-      <div className="mt-16">
-        <h2 className="text-3xl font-semibold text-slate-800">Top Cities</h2>
-        <p className="text-gray-500 mt-2">Top cities based on available guides.</p>
-
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mt-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {rankedCities.slice(0, 10).map((city, index) => (
             <CityCard key={`top-${city.city}-${index}`} city={city} index={index} showRank={true} />
           ))}
         </div>
       </div>
-
-    
     </div>
   );
 };

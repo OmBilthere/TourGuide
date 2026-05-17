@@ -104,11 +104,11 @@ const Navbar = () => {
   return (
     <>
       {/* Navbar */}
-      <div className='fixed z-50 w-full backdrop-blur-2xl flex justify-between items-center px-4 py-3 sm:px-20 xl:px-32 border-b border-gray-400 '>
+      <div className='fixed z-50 w-full backdrop-blur-2xl flex justify-between items-center px-3 sm:px-6 md:px-20 xl:px-32 py-3 border-b border-gray-400'>
         {/* Logo */}
         <img
           src={logo}
-          className='w-32 sm:w-44 cursor-pointer rounded-lg'
+          className='w-24 sm:w-32 md:w-44 cursor-pointer rounded-lg'
           alt='logo'
           onClick={() => navigate('/')}
         />

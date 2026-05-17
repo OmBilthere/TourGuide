@@ -77,76 +77,128 @@ const CityDetails = () => {
 
  
 
-  if (loading) return <div className="p-20 text-center">Loading...</div>;
+  if (loading) return (
+    <div className="flex items-center justify-center min-h-screen">
+      <div className="text-center">
+        <div className="w-12 h-12 border-4 border-sky-200 border-t-sky-500 rounded-full animate-spin mx-auto mb-4"></div>
+        <p className="text-slate-600">Loading guides...</p>
+      </div>
+    </div>
+  );
 
   const allImages = cityInfo?.images || [];
   const cityDescription = cityInfo?.description || "";
 
   return (
-    <div className="px-4 sm:px-20 xl:px-32 py-20">
-      <h1 className="text-4xl font-semibold text-slate-800">
-        Explore {cityName}
-      </h1>
-
-      <p className="text-gray-500 mt-4 max-w-4xl leading-7">
-        {cityDescription}
-      </p>
-
-      {/* Gallery */}
-      <div className="mt-16">
-        <h2 className="text-3xl font-semibold text-slate-800">Gallery</h2>
-
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
-          {allImages.map((img, index) => (
-            <img
-              key={index}
-              src={img}
-              alt={cityName}
-              className="h-64 w-full object-cover rounded-2xl"
-            />
-          ))}
+    <div className="w-full">
+      {/* Hero Section */}
+      <div className="px-4 sm:px-20 xl:px-32 py-16 bg-gradient-to-br from-sky-50 to-purple-50 text-center">
+        <div className="max-w-4xl mx-auto">
+          <h1 className="text-5xl sm:text-6xl font-bold text-slate-900 mb-6">
+            Explore <span className="text-sky-500">{cityName}</span>
+          </h1>
+          <p className="text-lg text-slate-700 leading-relaxed">
+            {cityDescription || "Discover authentic experiences with verified local guides. Book your perfect tour today."}
+          </p>
         </div>
       </div>
 
-      {/* Guides */}
-      <div className="mt-16">
-        <h2 className="text-3xl font-semibold text-slate-800">
-          Available Guides
-        </h2>
+      {/* Gallery Section */}
+      {allImages.length > 0 && (
+        <div className="px-4 sm:px-20 xl:px-32 py-20 bg-white">
+          <div className="mb-12 text-center">
+            <h2 className="text-4xl font-bold text-slate-900 mb-2">Gallery</h2>
+            <p className="text-slate-600 text-lg">Stunning views and attractions in {cityName}</p>
+          </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mt-8">
-          {cityGuides.map((guide) => (
-            <div
-            onClick={() => navigate(`/Explore/${cityName}/guide/${guide.id}`)}
-              key={guide.id}
-              className="border rounded-2xl shadow-lg p-5 hover:bg-blue-200 transition cursor-pointer"
-            >
-              <div className="flex items-center gap-4">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {allImages.map((img, index) => (
+              <div
+                key={index}
+                className="group rounded-3xl overflow-hidden bg-gradient-to-br from-slate-200 to-slate-300 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2"
+              >
                 <img
-                  src={guide.image}
-                  alt={guide.name}
-                  className="w-16 h-16 rounded-full object-cover"
+                  src={img}
+                  alt={`${cityName} ${index + 1}`}
+                  className="h-72 w-full object-cover group-hover:scale-110 transition-transform duration-500"
                 />
-                <div>
-                  <h3 className="text-xl font-semibold">{guide.name}</h3>
-                  <p className="text-sm text-gray-500">
-                    ⭐ {guide.rating}
-                  </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Guides Section */}
+      <div className="px-4 sm:px-20 xl:px-32 py-20 bg-slate-50">
+        <div className="mb-12">
+          <h2 className="text-4xl font-bold text-slate-900 mb-3">
+            Available Guides {cityGuides.length > 0 && <span className="text-sky-500">({cityGuides.length})</span>}
+          </h2>
+          <p className="text-slate-600">Meet our verified guides ready to share their expertise</p>
+        </div>
+
+        {cityGuides.length > 0 ? (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {cityGuides.map((guide) => (
+              <div
+                key={guide.id}
+                onClick={() => navigate(`/Explore/${cityName}/guide/${guide.id}`)}
+                className="group bg-white rounded-3xl overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer"
+              >
+                {/* Guide Image */}
+                <div className="relative h-64 overflow-hidden bg-gradient-to-br from-slate-200 to-slate-300">
+                  <img
+                    src={guide.image}
+                    alt={guide.name}
+                    className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-500"
+                  />
+                  {guide.rating > 0 && (
+                    <div className="absolute top-3 right-3 bg-amber-400 text-white px-3 py-1.5 rounded-lg flex items-center gap-1.5 shadow-xl font-bold text-sm">
+                      <span>★</span>
+                      <span>{guide.rating}</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Guide Info */}
+                <div className="p-6">
+                  <h3 className="text-2xl font-bold text-slate-900 mb-1 group-hover:text-sky-600 transition">
+                    {guide.name}
+                  </h3>
+                  
+                  <div className="bg-sky-50 px-3 py-1 rounded-full inline-block mb-4">
+                    <p className="text-sm font-semibold text-sky-700">{guide.speciality}</p>
+                  </div>
+
+                  <div className="space-y-3 mt-4">
+                    <p className="text-sm text-slate-700">
+                      <span className="font-semibold">🗣️ Languages:</span> {Array.isArray(guide.languages) ? guide.languages.join(", ") : guide.languages}
+                    </p>
+                    {guide.price && (
+                      <p className="text-sm text-slate-700">
+                        <span className="font-semibold">💰 Price:</span> {guide.price}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="mt-6 flex items-center text-sky-500 font-semibold group-hover:translate-x-1 transition">
+                    View Profile →
+                  </div>
                 </div>
               </div>
-
-              <p className="mt-4 text-gray-600">
-                <strong>Languages:</strong> {Array.isArray(guide.languages) ? guide.languages.join(", ") : guide.languages}
-              </p>
-              <p className="mt-2 text-gray-600">
-                <strong>Speciality:</strong> {guide.speciality}
-              </p>
-              <p className="mt-2 text-gray-600">
-                <strong>Price:</strong> {guide.price}
-              </p>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-16 bg-white rounded-3xl">
+            <p className="text-xl text-slate-500">No guides available in {cityName} yet.</p>
+            <button
+              onClick={() => navigate("/explore")}
+              className="mt-6 px-8 py-3 bg-sky-500 text-white rounded-lg font-medium hover:bg-sky-600 transition"
+            >
+              Explore Other Cities
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

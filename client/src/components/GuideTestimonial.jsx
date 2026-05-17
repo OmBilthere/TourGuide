@@ -1,6 +1,4 @@
 
-import star_icon from "../assets/star_icon.svg";
-import star_dull_icon from "../assets/star_dull_icon.svg";
 
 const GuideTestimonial = () => {
   const guideStories = [
@@ -46,16 +44,7 @@ const GuideTestimonial = () => {
             className="p-8 m-4 max-w-xs rounded-lg bg-[#FDFDFE] shadow-lg border border-gray-100 hover:-translate-y-1 transition duration-300 cursor-pointer"
           >
             <div className="flex items-center gap-1">
-              {Array(5)
-                .fill(0)
-                .map((_, itemIndex) => (
-                  <img
-                    className="w-4 h-4"
-                    alt=""
-                    key={itemIndex}
-                    src={itemIndex < story.rating ? star_icon : star_dull_icon}
-                  />
-                ))}
+              {Array(5).fill(0).map((_, itemIndex) => (<span key={itemIndex} style={{ color: itemIndex < story.rating ? "#facc15" : "#d1d5db" }}>★</span>))}
             </div>
             <p className="text-gray-500 text-sm my-5">"{story.content}"</p>
             <hr className="mb-5 border-gray-300" />
@@ -74,3 +63,4 @@ const GuideTestimonial = () => {
 };
 
 export default GuideTestimonial;
+

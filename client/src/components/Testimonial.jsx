@@ -1,5 +1,3 @@
-import star_icon from "../assets/star_icon.svg";
-import star_dull_icon from "../assets/star_dull_icon.svg";
 
 const Testimonial = () => {
     
@@ -38,8 +36,7 @@ const Testimonial = () => {
                     <div key={index} className='p-8 m-4 max-w-xs rounded-lg bg-[#FDFDFE] shadow-lg border border-gray-100 hover:-translate-y-1 transition duration-300 cursor-pointer'>
                         <div className="flex items-center gap-1">
                            {
-                            Array(5).fill(0).map((_, index) => (<img className="w-4 h-4" alt=""
-                                 key={index} src={index < testimonial.rating ? star_icon : star_dull_icon} />))
+                            Array(5).fill(0).map((_, index) => (<span key={index} style={{ color: index < testimonial.rating ? "#facc15" : "#d1d5db" }}>★</span>))
                            }
                         </div>
                         <p className='text-gray-500 text-sm my-5'>"{testimonial.content}"</p>
