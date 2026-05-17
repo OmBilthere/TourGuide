@@ -176,7 +176,8 @@ const GuideDetails = () => {
   return (
     <div className="w-full">
       {/* Hero Section */}
-      <div className="px-4 sm:px-20 xl:px-32 py-16 bg-gradient-to-br from-sky-50 to-purple-50">
+      <div className="px-4 sm:px-20 xl:px-32 pt-10 pb-4">
+        <div className="w-full max-w-7xl mx-auto rounded-3xl bg-gradient-to-br from-sky-50 to-purple-50 px-6 py-12">
         <div className="grid md:grid-cols-3 gap-12 items-start">
           {/* Guide Image - Smaller */}
           <div className="md:col-span-1 flex justify-center">
@@ -250,13 +251,14 @@ const GuideDetails = () => {
             </div>
           </div>
         </div>
+        </div>
       </div>
 
       {/* About Section */}
-      <div className="px-4 sm:px-20 xl:px-32 py-20">
-        <div className="max-w-3xl mx-auto">
+      <div className="px-4 sm:px-20 xl:px-32 pt-4 pb-4">
+        <div className="w-full max-w-7xl mx-auto rounded-3xl bg-white px-6 py-12">
           <h2 className="text-4xl font-bold text-slate-900 mb-6 text-center">About Guide</h2>
-          <div className="bg-gradient-to-br from-slate-50 to-slate-100 rounded-3xl p-8 border border-slate-200">
+          <div className="max-w-4xl mx-auto bg-gradient-to-br from-slate-50 to-slate-100 rounded-3xl p-8 border border-slate-200">
             <p className="text-lg text-slate-700 leading-relaxed">{guide.about}</p>
           </div>
         </div>
@@ -264,10 +266,10 @@ const GuideDetails = () => {
 
       {/* Highlights Section */}
       {guide.highlights.length > 0 && (
-        <div className="px-4 sm:px-20 xl:px-32 py-20 bg-white">
-          <div className="max-w-4xl mx-auto">
+        <div className="px-4 sm:px-20 xl:px-32 pt-4 pb-4">
+          <div className="w-full max-w-7xl mx-auto rounded-3xl bg-white px-6 py-12">
             <h2 className="text-4xl font-bold text-slate-900 mb-8 text-center">Tour Highlights</h2>
-            <div className="grid md:grid-cols-2 gap-4">
+            <div className="max-w-4xl mx-auto grid md:grid-cols-2 gap-4">
               {guide.highlights.map((item, index) => (
                 <div key={index} className="flex items-center gap-4 bg-gradient-to-r from-sky-50 to-purple-50 rounded-2xl p-4 border border-sky-100">
                   <span className="text-2xl">✨</span>
@@ -280,7 +282,8 @@ const GuideDetails = () => {
       )}
 
       {/* Slots Section */}
-      <div className="px-4 sm:px-20 xl:px-32 py-20 bg-slate-50">
+      <div className="px-4 sm:px-20 xl:px-32 pt-4 pb-4">
+        <div className="w-full max-w-7xl mx-auto rounded-3xl bg-slate-50 px-6 py-12">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-4xl font-bold text-slate-900 mb-5 text-center">Available Slots</h2>
           {!hasAvailableSlots && (
@@ -335,11 +338,13 @@ const GuideDetails = () => {
             <p className="text-sm text-amber-600 font-semibold mt-4 text-center">📍 Please select a time slot to continue.</p>
           )}
         </div>
+        </div>
       </div>
 
       {/* Reviews Section */}
       {reviews.length > 0 && (
-        <div className="px-4 sm:px-20 xl:px-32 py-20 bg-white">
+        <div className="px-4 sm:px-20 xl:px-32 pt-4 pb-10">
+          <div className="w-full max-w-7xl mx-auto rounded-3xl bg-white px-6 py-12">
           <div className="max-w-3xl mx-auto">
             <h2 className="text-4xl font-bold text-slate-900 mb-8 text-center">Reviews <span className="text-sky-500">({reviews.length})</span></h2>
             <div className="space-y-5">
@@ -382,6 +387,7 @@ const GuideDetails = () => {
               </div>
             ))}
             </div>
+          </div>
           </div>
         </div>
       )}

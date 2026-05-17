@@ -79,7 +79,7 @@ const ChooseRole = () => {
             type="button"
             onClick={() => handleSelectRole("tourist")}
             disabled={Boolean(loadingRole)}
-            className="rounded-2xl border border-sky-200 bg-sky-50 p-6 text-left hover:bg-sky-100 transition disabled:opacity-60"
+            className="rounded-2xl border border-sky-200 cursor-pointer bg-sky-50 p-6 text-left hover:bg-sky-100 transition disabled:opacity-60"
           >
             <p className="text-xl font-semibold text-slate-800">Tourist</p>
             <p className="mt-2 text-sm text-gray-600">Explore cities and book local guides.</p>
@@ -89,7 +89,7 @@ const ChooseRole = () => {
             type="button"
             onClick={() => handleSelectRole("guide")}
             disabled={Boolean(loadingRole)}
-            className="rounded-2xl border border-emerald-200 bg-emerald-50 p-6 text-left hover:bg-emerald-100 transition disabled:opacity-60"
+            className="rounded-2xl border border-emerald-200 cursor-pointer bg-emerald-50 p-6 text-left hover:bg-emerald-100 transition disabled:opacity-60"
           >
             <p className="text-xl font-semibold text-slate-800">Guide</p>
             <p className="mt-2 text-sm text-gray-600">Manage booking requests and tours.</p>

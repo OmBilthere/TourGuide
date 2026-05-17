@@ -13,8 +13,8 @@ const statusStyles = {
   completed: "bg-blue-100 text-blue-700",
 };
 
-const primaryBtn = "py-2 px-4 bg-blue-500 text-white rounded-xl text-sm hover:bg-blue-600 transition";
-const primaryBtnLarge = "flex-1 py-3 bg-blue-500 text-white rounded-xl font-medium hover:bg-blue-600 transition";
+const primaryBtn = "py-2 px-4 bg-sky-500 text-white rounded-lg text-sm hover:bg-sky-600 active:scale-95 transition";
+const primaryBtnLarge = "flex-1 py-3 bg-sky-500 text-white rounded-lg font-medium hover:bg-sky-600 active:scale-95 transition";
 const secondaryBtn = "flex-1 py-3 cursor-pointer border border-gray-300 text-gray-600 rounded-xl hover:bg-gray-50 transition";
 
 const mapBooking = (booking) => ({
@@ -153,11 +153,13 @@ const BookingHistory = () => {
 
   if (!bookings || bookings.length === 0) {
     return (
-      <div className="px-4 sm:px-20 xl:px-32 py-20 text-center text-gray-500">
-        <p className="text-2xl font-semibold">No bookings yet</p>
-        <button onClick={() => navigate("/Explore")} className={"mt-6 " + primaryBtnLarge}>
-          Explore Guides
-        </button>
+      <div className="px-4 sm:px-20 xl:px-32 py-10 text-center text-gray-500">
+        <div className="w-full max-w-7xl mx-auto rounded-3xl bg-white px-6 py-12 shadow-sm border border-gray-100">
+          <p className="text-2xl font-semibold">No bookings yet</p>
+          <button onClick={() => navigate("/Explore")} className={"mt-6 max-w-xs " + primaryBtnLarge}>
+            Explore Guides
+          </button>
+        </div>
       </div>
     );
   }
@@ -165,15 +167,17 @@ const BookingHistory = () => {
   return (
     <div className="w-full">
       {/* Hero */}
-      <div className="px-4 sm:px-20 xl:px-32 py-16 bg-gradient-to-br from-sky-50 to-purple-50 text-center">
-        <div className="max-w-4xl mx-auto">
-          <h1 className="text-5xl font-bold text-slate-900 mb-3">My Bookings</h1>
-          <p className="text-slate-600">Manage your upcoming trips and view past bookings.</p>
+      <div className="px-4 sm:px-20 xl:px-32 pt-10 pb-4">
+        <div className="w-full max-w-7xl mx-auto rounded-3xl bg-gradient-to-br from-sky-50 to-purple-50 px-6 py-12 text-center">
+          <div className="max-w-4xl mx-auto">
+            <h1 className="text-5xl font-bold text-slate-900 mb-3">My Bookings</h1>
+            <p className="text-slate-600">Manage your upcoming trips and view past bookings.</p>
+          </div>
         </div>
       </div>
 
-      <div className="px-4 sm:px-20 xl:px-32 py-12">
-        <div className="max-w-4xl mx-auto space-y-6">
+      <div className="px-4 sm:px-20 xl:px-32 pt-4 pb-12">
+        <div className="w-full max-w-7xl mx-auto space-y-6">
           {bookings.map((booking) => (
             <div
               key={booking.id}
@@ -256,8 +260,8 @@ const BookingHistory = () => {
             </div>
 
             {canShowGuideContact && activeBooking.completionCode && (
-              <div className="bg-blue-50 rounded-xl p-4 mb-6 space-y-2 border border-blue-100">
-                <p className="text-sm text-blue-700 font-medium">Trip Completion Code</p>
+              <div className="bg-sky-50 rounded-xl p-4 mb-6 space-y-2 border border-sky-100">
+                <p className="text-sm text-sky-700 font-medium">Trip Completion Code</p>
                 <p className="text-slate-800 text-lg font-semibold tracking-[0.25em]">{activeBooking.completionCode}</p>
                 <p className="text-sm text-gray-600">Share this code with the guide after the trip. The guide will enter it to mark the trip completed.</p>
               </div>

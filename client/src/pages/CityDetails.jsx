@@ -92,30 +92,33 @@ const CityDetails = () => {
   return (
     <div className="w-full">
       {/* Hero Section */}
-      <div className="px-4 sm:px-20 xl:px-32 py-16 bg-gradient-to-br from-sky-50 to-purple-50 text-center">
-        <div className="max-w-4xl mx-auto">
-          <h1 className="text-5xl sm:text-6xl font-bold text-slate-900 mb-6">
-            Explore <span className="text-sky-500">{cityName}</span>
-          </h1>
-          <p className="text-lg text-slate-700 leading-relaxed">
-            {cityDescription || "Discover authentic experiences with verified local guides. Book your perfect tour today."}
-          </p>
+      <div className="px-4 sm:px-20 xl:px-32 pt-10 pb-4">
+        <div className="w-full max-w-7xl mx-auto rounded-3xl bg-gradient-to-br from-sky-50 to-purple-50 px-6 py-12 text-center">
+          <div className="max-w-4xl mx-auto">
+            <h1 className="text-5xl sm:text-6xl font-semibold text-slate-900 mb-6">
+              Explore <span className="text-sky-500">{cityName}</span>
+            </h1>
+            <p className="text-lg text-slate-600 leading-relaxed">
+              {cityDescription || "Discover authentic experiences with verified local guides. Book your perfect tour today."}
+            </p>
+          </div>
         </div>
       </div>
 
       {/* Gallery Section */}
       {allImages.length > 0 && (
-        <div className="px-4 sm:px-20 xl:px-32 py-20 bg-white">
+        <div className="px-4 sm:px-20 xl:px-32 pt-4 pb-4">
+          <div className="w-full max-w-7xl mx-auto rounded-3xl bg-white px-6 py-12">
           <div className="mb-12 text-center">
-            <h2 className="text-4xl font-bold text-slate-900 mb-2">Gallery</h2>
+            <h2 className="text-4xl font-semibold text-slate-900 mb-3">Gallery</h2>
             <p className="text-slate-600 text-lg">Stunning views and attractions in {cityName}</p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="flex w-full flex-wrap justify-center gap-6">
             {allImages.map((img, index) => (
               <div
                 key={index}
-                className="group rounded-3xl overflow-hidden bg-gradient-to-br from-slate-200 to-slate-300 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2"
+                className="group w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] rounded-3xl overflow-hidden bg-gradient-to-br from-slate-200 to-slate-300 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2"
               >
                 <img
                   src={img}
@@ -125,20 +128,22 @@ const CityDetails = () => {
               </div>
             ))}
           </div>
+          </div>
         </div>
       )}
 
       {/* Guides Section */}
-      <div className="px-4 sm:px-20 xl:px-32 py-20 bg-slate-50">
-        <div className="mb-12">
-          <h2 className="text-4xl font-bold text-slate-900 mb-3">
+      <div className="px-4 sm:px-20 xl:px-32 pt-4 pb-10">
+        <div className="w-full max-w-7xl mx-auto rounded-3xl bg-white px-6 py-12">
+        <div className="mb-12 text-center">
+          <h2 className="text-4xl font-semibold text-slate-900 mb-3">
             Available Guides {cityGuides.length > 0 && <span className="text-sky-500">({cityGuides.length})</span>}
           </h2>
           <p className="text-slate-600">Meet our verified guides ready to share their expertise</p>
         </div>
 
         {cityGuides.length > 0 ? (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid w-full md:grid-cols-2 lg:grid-cols-3 gap-8">
             {cityGuides.map((guide) => (
               <div
                 key={guide.id}
@@ -199,6 +204,7 @@ const CityDetails = () => {
             </button>
           </div>
         )}
+        </div>
       </div>
     </div>
   );

@@ -60,7 +60,8 @@ const Explore = () => {
     <div className="w-full">
       {/* Hero Section */}
       <div className="px-4 sm:px-20 xl:px-32 py-16 sm:py-20 min-h-[45vh] flex flex-col justify-center items-center">
-        <div className="text-center max-w-3xl">
+        <div className="w-full max-w-7xl mx-auto">
+        <div className="text-center max-w-3xl mx-auto">
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-semibold text-slate-900 leading-tight mb-4">
             Explore Amazing <span className="text-sky-500">Destinations</span>
           </h1>
@@ -86,11 +87,13 @@ const Explore = () => {
             </button>
           </div>
         </div>
+        </div>
       </div>
 
       {/* Search Results Section */}
       {searchTerm.trim() && (
         <div className="px-4 sm:px-20 xl:px-32 py-16 bg-gradient-to-b from-sky-50 to-white">
+          <div className="w-full max-w-7xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-4xl font-semibold text-slate-900 mb-3">Search Results</h2>
             <p className="text-slate-600">
@@ -101,7 +104,7 @@ const Explore = () => {
           </div>
 
           {filteredCities.length > 0 ? (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid w-full md:grid-cols-2 lg:grid-cols-3 gap-8">
               {filteredCities.map((city, index) => (
                 <CityCard key={`search-${city.city}-${index}`} city={city} />
               ))}
@@ -111,11 +114,13 @@ const Explore = () => {
               <p className="text-slate-500 text-lg">Try searching with different keywords</p>
             </div>
           )}
+          </div>
         </div>
       )}
 
       {/* Top Cities Section */}
       <div className={`px-4 sm:px-20 xl:px-32 py-20 ${searchTerm.trim() ? 'bg-white' : ''}`}>
+        <div className="w-full max-w-7xl mx-auto">
         <div className="text-center mb-12">
           <h2 className="text-4xl font-semibold text-slate-900 mb-3">Top Cities</h2>
           <p className="text-slate-600 max-w-2xl mx-auto">
@@ -123,10 +128,11 @@ const Explore = () => {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid w-full md:grid-cols-2 lg:grid-cols-3 gap-8">
           {rankedCities.slice(0, 10).map((city, index) => (
             <CityCard key={`top-${city.city}-${index}`} city={city} index={index} showRank={true} />
           ))}
+        </div>
         </div>
       </div>
     </div>

@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 const CityCard = ({ city, index, showRank = false }) => {
   return (
-    <Link to={`/Explore/${city.city}`}>
+    <Link to={`/Explore/${city.city}`} className="block w-full">
       <div className="group rounded-3xl overflow-hidden bg-white hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer">
         {/* Image Container */}
         <div className="relative overflow-hidden h-64 bg-gradient-to-br from-slate-200 to-slate-300">

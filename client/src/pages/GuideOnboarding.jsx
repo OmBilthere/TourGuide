@@ -170,23 +170,35 @@ const GuideOnboarding = () => {
   };
 
   if (loadingData) {
-    return <div className="px-4 sm:px-20 xl:px-32 py-20 text-center">Loading onboarding...</div>;
+    return (
+      <div className="px-4 sm:px-20 xl:px-32 py-20 text-center text-slate-500">
+        Loading onboarding...
+      </div>
+    );
   }
 
   const highlightOptions = [...new Set([...HIGHLIGHT_PRESETS, ...form.highlights])];
   const slotOptions = [...new Set([...SLOT_PRESETS, ...form.slots])];
 
   return (
-    <div className="px-4 sm:px-20 xl:px-32 py-20">
-      <div className="max-w-4xl mx-auto bg-white border border-gray-200 rounded-2xl p-6 sm:p-8 shadow-sm">
-        <h1 className="text-3xl sm:text-4xl font-semibold text-slate-800">
-          {isEditMode ? "Update Guide Profile" : "Complete Guide Profile"}
-        </h1>
-        <p className="text-gray-600 mt-3">
-          {isEditMode
-            ? "Update your guide details to keep your profile accurate."
-            : "Completing these details is required to access your guide dashboard."}
-        </p>
+    <div className="w-full">
+      <div className="px-4 sm:px-20 xl:px-32 py-10">
+        <div className="max-w-7xl mx-auto rounded-3xl bg-gradient-to-br from-sky-50 to-purple-50 px-6 py-12 text-center">
+          <div className="max-w-4xl mx-auto">
+            <h1 className="text-4xl sm:text-5xl font-semibold text-slate-900 mb-3">
+              {isEditMode ? "Update Guide Profile" : "Complete Guide Profile"}
+            </h1>
+            <p className="text-slate-600">
+              {isEditMode
+                ? "Update your guide details to keep your profile accurate."
+                : "Completing these details is required to access your guide dashboard."}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div className="px-4 sm:px-20 xl:px-32 pb-12">
+        <div className="max-w-7xl mx-auto bg-white border border-gray-100 rounded-3xl p-6 sm:p-8 shadow-sm">
 
         <form onSubmit={handleSubmit} className="grid sm:grid-cols-2 gap-5 mt-8">
           <label className="flex flex-col gap-2">
@@ -195,7 +207,7 @@ const GuideOnboarding = () => {
               name="city"
               value={form.city}
               onChange={handleChange}
-              className="border border-gray-300 rounded-xl px-4 py-3"
+              className="border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-transparent"
               required
             >
               <option value="">Select city</option>
@@ -215,7 +227,7 @@ const GuideOnboarding = () => {
               value={form.speciality}
               onChange={handleChange}
               placeholder="Heritage walks"
-              className="border border-gray-300 rounded-xl px-4 py-3"
+              className="border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-transparent"
               required
             />
           </label>
@@ -229,7 +241,7 @@ const GuideOnboarding = () => {
               name="experience_years"
               value={form.experience_years}
               onChange={handleChange}
-              className="border border-gray-300 rounded-xl px-4 py-3"
+              className="border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-transparent"
               required
             />
           </label>
@@ -243,7 +255,7 @@ const GuideOnboarding = () => {
               name="price"
               value={form.price}
               onChange={handleChange}
-              className="border border-gray-300 rounded-xl px-4 py-3"
+              className="border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-transparent"
               required
             />
           </label>
@@ -256,7 +268,7 @@ const GuideOnboarding = () => {
               value={form.about}
               onChange={handleChange}
               placeholder="Tell tourists why they should book you"
-              className="border border-gray-300 rounded-xl px-4 py-3"
+              className="border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-transparent"
             />
           </label>
 
@@ -268,7 +280,7 @@ const GuideOnboarding = () => {
               value={form.languagesCsv}
               onChange={handleChange}
               placeholder="Hindi, English, French"
-              className="border border-gray-300 rounded-xl px-4 py-3"
+              className="border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-transparent"
             />
           </label>
 
@@ -280,7 +292,7 @@ const GuideOnboarding = () => {
               value={form.phone}
               onChange={handleChange}
               placeholder="e.g. +91 91234 56789"
-              className="border border-gray-300 rounded-xl px-4 py-3"
+              className="border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-transparent"
             />
           </label>
 
@@ -296,8 +308,8 @@ const GuideOnboarding = () => {
                     onClick={() => toggleOption("highlights", item)}
                     className={`px-4 py-2 rounded-full border transition cursor-pointer ${
                       active
-                        ? "bg-blue-500 text-white border-blue-500"
-                        : "bg-slate-100 text-slate-700 border-slate-200 hover:border-blue-300"
+                        ? "bg-sky-500 text-white border-sky-500"
+                        : "bg-slate-100 text-slate-700 border-slate-200 hover:border-sky-300"
                     }`}
                   >
                     {item}
@@ -311,7 +323,7 @@ const GuideOnboarding = () => {
               value={form.customHighlightsCsv}
               onChange={handleChange}
               placeholder="Add custom highlights (comma separated)"
-              className="border border-gray-300 rounded-xl px-4 py-3"
+              className="border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-transparent"
             />
           </div>
 
@@ -327,8 +339,8 @@ const GuideOnboarding = () => {
                     onClick={() => toggleOption("slots", item)}
                     className={`px-4 py-2 rounded-xl border transition cursor-pointer ${
                       active
-                        ? "bg-blue-500 text-white border-blue-500"
-                        : "bg-white text-slate-700 border-slate-300 hover:border-blue-300"
+                        ? "bg-sky-500 text-white border-sky-500"
+                        : "bg-white text-slate-700 border-slate-300 hover:border-sky-300"
                     }`}
                   >
                     {item}
@@ -342,7 +354,7 @@ const GuideOnboarding = () => {
               value={form.customSlotsCsv}
               onChange={handleChange}
               placeholder="Add custom slots (comma separated)"
-              className="border border-gray-300 rounded-xl px-4 py-3"
+              className="border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-transparent"
             />
           </div>
 
@@ -350,12 +362,13 @@ const GuideOnboarding = () => {
             <button
               type="submit"
               disabled={loading}
-              className="px-6 py-3 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
+              className="px-6 py-3 bg-sky-500 text-white rounded-lg hover:bg-sky-600 active:scale-95 transition disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
             >
               {loading ? "Saving..." : isEditMode ? "Update Profile" : "Save and Continue"}
             </button>
           </div>
         </form>
+        </div>
       </div>
     </div>
   );
