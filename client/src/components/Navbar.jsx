@@ -104,7 +104,7 @@ const Navbar = () => {
   return (
     <>
       {/* Navbar */}
-      <div className='fixed z-50 w-full backdrop-blur-2xl flex justify-between items-center px-3 sm:px-6 md:px-20 xl:px-32 py-3 border-b border-gray-400'>
+      <div className='fixed z-50 w-full backdrop-blur-2xl flex justify-between items-center px-4 sm:px-6 md:px-20 xl:px-32 py-4 border-b border-gray-400'>
         {/* Logo */}
         <img
           src={logo}
@@ -138,7 +138,7 @@ const Navbar = () => {
                 afterSignInUrl: '/choose-role',
                 afterSignUpUrl: '/choose-role',
               })}
-              className='flex bg-sky-400 items-center gap-2 rounded-full text-sm cursor-pointer text-white px-6 py-2.5'
+              className='flex bg-sky-400 items-center gap-2 rounded-xl text-sm cursor-pointer text-white px-4 py-2'
             >
               Login
               <ArrowRight className='w-4 h-4' />
@@ -174,7 +174,7 @@ const Navbar = () => {
                 })
                 setOpen(false)
               }}
-              className='flex bg-sky-400 items-center gap-2 rounded-full text-sm text-white px-6 py-2.5 cursor-pointer'
+              className='flex bg-sky-400 items-center gap-2 rounded-lg text-sm text-white px-4 py-2 cursor-pointer'
             >
               Login
               <ArrowRight className='w-4 h-4' />
