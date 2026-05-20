@@ -10,11 +10,39 @@ A hyperlocal tourism guide booking platform connecting travelers with verified l
 
 ## Features
 
+### For Travelers
 - Browse & book verified local guides
+- Detailed guide profiles with reviews & ratings
 - Secure payments via Razorpay
-- Image uploads via Cloudinary
-- Auth with Clerk (Google, Email)
-- Guide & traveler dashboards
+- Booking history & cancellation
+- Leave reviews & ratings
+- Travel history tracking
+
+### For Local Guides
+**Profile Setup Interface:**
+- Create professional guide profile with photo (Cloudinary)
+- Specify city, speciality, experience level, hourly rate
+- Add bio & multilingual support
+- Define availability slots (Morning, Afternoon, Evening, Full Day)
+- Add service highlights & specializations
+
+**Dashboard & Management:**
+- Real-time booking statistics (Requested, Confirmed, Completed)
+- Manage booking requests (Accept/Reject/Complete)
+- View customer reviews & ratings
+- Toggle availability status
+- Booking history with completion codes
+
+### General
+- Secure JWT-based authentication with Clerk
+- Role-based access (Traveler/Guide)
+- City-wise guide discovery
+- Responsive design across devices
+
+## Live Deployment
+
+- **Frontend** — https://tour-guide-sigma.vercel.app
+- **Backend** — https://tourguide-h3sn.onrender.com
 
 ## Getting Started
 
