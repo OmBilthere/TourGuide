@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Hero from "../components/Hero.jsx";
 import Plan from "../components/Plan.jsx";
 import Testimonial from "../components/Testimonial.jsx";
@@ -10,20 +10,6 @@ import GuidePlan from "../components/GuidePlan.jsx";
 
 const Home = () => {
   const [role, setRole] = useState(() => localStorage.getItem("tg_user_role") || "tourist");
-
-  useEffect(() => {
-    const syncRole = () => {
-      setRole(localStorage.getItem("tg_user_role") || "tourist");
-    };
-
-    window.addEventListener("storage", syncRole);
-    window.addEventListener("focus", syncRole);
-
-    return () => {
-      window.removeEventListener("storage", syncRole);
-      window.removeEventListener("focus", syncRole);
-    };
-  }, []);
 
   if (role === "guide") {
     return (

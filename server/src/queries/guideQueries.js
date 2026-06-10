@@ -208,7 +208,7 @@ GROUP BY
     g.id,
     g.user_id,
     u.full_name,
-  u.avatar_url,
+    u.avatar_url,
     u.phone,
     c.city_name,
     g.speciality,
@@ -216,12 +216,6 @@ GROUP BY
     g.experience_years,
     g.about
 LIMIT 1;
-`;
-
-export const updateGuideSlotsAvailabilityByGuideIdQuery = `
-UPDATE guide_slots
-SET is_available = $2
-WHERE guide_id = $1;
 `;
 
 export const getCityIdByNameQuery = `
@@ -232,26 +226,23 @@ LIMIT 1;
 `;
 
 export const upsertGuideByUserIdQuery = `
-WITH updated AS (
-  UPDATE guides
-  SET
-    city_id = $2,
-    speciality = $3,
-    price = $4,
-    experience_years = $5,
-    about = $6
-  WHERE user_id = $1
-  RETURNING id
-),
-inserted AS (
-  INSERT INTO guides (user_id, city_id, speciality, price, experience_years, about)
-  SELECT $1, $2, $3, $4, $5, $6
-  WHERE NOT EXISTS (SELECT 1 FROM updated)
-  RETURNING id
-)
-SELECT id FROM updated
-UNION ALL
-SELECT id FROM inserted;
+  INSERT INTO guides (
+    user_id,
+    city_id,
+    speciality,
+    price,
+    experience_years,
+    about
+  )
+  VALUES ($1, $2, $3, $4, $5, $6)
+  ON CONFLICT (user_id)
+  DO UPDATE SET
+    city_id = EXCLUDED.city_id,
+    speciality = EXCLUDED.speciality,
+    price = EXCLUDED.price,
+    experience_years = EXCLUDED.experience_years,
+    about = EXCLUDED.about
+  RETURNING *;
 `;
 
 export const deleteGuideLanguagesByGuideIdQuery = `

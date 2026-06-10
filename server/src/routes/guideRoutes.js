@@ -4,7 +4,6 @@ import {
   getGuideById,
   getMyGuideProfile,
   upsertMyGuideProfile,
-  updateMyGuideAvailability,
   getGuideBookings,
   confirmGuideBooking,
   rejectGuideBooking,
@@ -25,9 +24,6 @@ router.get("/me/profile", requireAuth, getMyGuideProfile);
 
 // create or update currently logged-in guide profile
 router.put("/me/profile", requireAuth, upsertMyGuideProfile);
-
-// update currently logged-in guide availability
-router.patch("/me/availability", requireAuth, updateMyGuideAvailability);
 
 //guide can confirm the booking by booking id
 router.patch("/bookings/confirm/:bookingId", requireAuth, confirmGuideBooking);

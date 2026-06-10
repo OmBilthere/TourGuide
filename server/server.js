@@ -31,7 +31,6 @@ app.use("/api/users", userRoutes);
 app.use("/api/cities", cityRoutes);
 app.use("/api/guides", guideRoutes);
 app.use("/api/bookings", bookingRoutes);
-
 app.use("/api/reviews", reviewRoutes);
 
 app.listen(PORT, () => {

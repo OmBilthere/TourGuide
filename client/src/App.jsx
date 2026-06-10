@@ -35,7 +35,6 @@ function App() {
             <Route path="guide/profile/edit" element={<GuideOnboarding />} />
           </Route>
           <Route path="bookings" element={<BookingHistory />} />
-          <Route path="history" element={<BookingHistory />} />
           <Route path="about" element={<About />} />
           <Route path="contact" element={<Contact />} />
         </Route>

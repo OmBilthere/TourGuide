@@ -58,7 +58,7 @@ const Explore = () => {
 
   return (
     <div className="w-full">
-      {/* Hero Section */}
+
       <div className="px-4 sm:px-20 xl:px-32 py-16 sm:py-20 min-h-[45vh] flex flex-col justify-center items-center">
         <div className="w-full max-w-7xl mx-auto">
         <div className="text-center max-w-3xl mx-auto">
@@ -69,7 +69,6 @@ const Explore = () => {
             Search and discover incredible cities. Find local guides ready to show you authentic experiences.
           </p>
 
-          {/* Premium Search Bar */}
           <div className="flex flex-col sm:flex-row gap-2 max-w-2xl mx-auto w-full">
             <input
               type="text"
@@ -89,8 +88,6 @@ const Explore = () => {
         </div>
         </div>
       </div>
-
-      {/* Search Results Section */}
       {searchTerm.trim() && (
         <div className="px-4 sm:px-20 xl:px-32 py-16 bg-gradient-to-b from-sky-50 to-white">
           <div className="w-full max-w-7xl mx-auto">
@@ -117,8 +114,6 @@ const Explore = () => {
           </div>
         </div>
       )}
-
-      {/* Top Cities Section */}
       <div className={`px-4 sm:px-20 xl:px-32 py-20 ${searchTerm.trim() ? 'bg-white' : ''}`}>
         <div className="w-full max-w-7xl mx-auto">
         <div className="text-center mb-12">

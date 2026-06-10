@@ -39,8 +39,8 @@ const GuideDetails = () => {
           if (reviewsRes.data?.reviews) {
             setReviews(reviewsRes.data.reviews);
           }
-        } catch (reviewError) {
-          // Reviews fetch failure is non-critical
+        } catch (error) {
+          console.error("Error fetching reviews:", error);
         }
         
         if (cityData?.id) {
@@ -75,13 +75,6 @@ const GuideDetails = () => {
     fetchGuideAndCity();
     return () => controller.abort();
   }, [guideId, cityName]);
-
-  // Scroll to top when guide loads
-  useEffect(() => {
-    if (guide) {
-      window.scrollTo(0, 0);
-    }
-  }, [guide]);
 
   if (loading) return (
     <div className="flex items-center justify-center min-h-screen">
@@ -133,11 +126,9 @@ const GuideDetails = () => {
     try {
       setLoading(true);
 
-      // Get slot ID from selected slot
       const slotId = selectedSlot.id || selectedSlot;
-      
-      // Calculate amount (price per hour, assuming 1 hour default)
-      const amount = guide.price * 1; // Can be adjusted for duration
+
+      const amount = guide.price * 1;
       
       const res = await axios.post(`${API_BASE}/api/bookings/create`, {
         user_id: user.id,
@@ -179,7 +170,7 @@ const GuideDetails = () => {
       <div className="px-4 sm:px-20 xl:px-32 pt-10 pb-4">
         <div className="w-full max-w-7xl mx-auto rounded-3xl bg-gradient-to-br from-sky-50 to-purple-50 px-6 py-12">
         <div className="grid md:grid-cols-3 gap-12 items-start">
-          {/* Guide Image - Smaller */}
+          {/* Guide Image */}
           <div className="md:col-span-1 flex justify-center">
             <div className="w-48 h-48 rounded-3xl overflow-hidden shadow-2xl bg-gradient-to-br from-slate-200 to-slate-300">
               <img

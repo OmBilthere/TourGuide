@@ -28,11 +28,6 @@ const ReviewModal = ({ booking, onClose, onSuccess }) => {
       return;
     }
 
-    console.log("Booking object:", booking);
-    console.log("User ID:", booking.userId);
-    console.log("Guide ID:", booking.guideId);
-    console.log("Booking ID:", booking.id);
-
     setIsSubmitting(true);
     try {
       const response = await axios.post(

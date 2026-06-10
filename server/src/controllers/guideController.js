@@ -14,15 +14,16 @@ import {
   insertGuideHighlightQuery,
   deleteGuideSlotsByGuideIdQuery,
   insertGuideSlotQuery,
-  updateGuideSlotsAvailabilityByGuideIdQuery,
   confirmGuideBookingQuery,
   rejectGuideBookingQuery,
   completeGuideBookingQuery,
 } from "../queries/guideQueries.js";
 
-import { db } from "../configs/db.js";
 import { updateUserPhoneQuery } from "../queries/userQueries.js";
+
 import { restoreSlotAvailabilityQuery } from "../queries/bookingQueries.js";
+
+import { db } from "../configs/db.js";
 import crypto from "crypto";
 
 const sanitizeStringArray = (values = []) => {
@@ -353,8 +354,7 @@ export const upsertMyGuideProfile = async (req, res) => {
       });
     }
 
-    // update user's phone if provided
-    if (phone && String(phone).trim() !== "") {
+      if (phone && String(phone).trim() !== "") {
       await client.query(updateUserPhoneQuery, [authUserId, String(phone).trim()]);
     }
 
@@ -390,55 +390,6 @@ export const upsertMyGuideProfile = async (req, res) => {
     });
   } finally {
     client.release();
-  }
-};
-
-export const updateMyGuideAvailability = async (req, res) => {
-  try {
-    const authUserId = req.authUser?.clerk_user_id;
-
-    if (req.authUser?.role !== "guide") {
-      return res.status(403).json({
-        success: false,
-        message: "Forbidden: guide access only",
-      });
-    }
-
-    const { is_available } = req.body;
-    if (typeof is_available !== "boolean") {
-      return res.status(400).json({
-        success: false,
-        message: "is_available must be a boolean",
-      });
-    }
-
-    const guideResult = await db.query(getGuideIdByUserIdQuery, [authUserId]);
-    const guide = guideResult.rows[0];
-
-    if (!guide) {
-      return res.status(404).json({
-        success: false,
-        message: "Guide profile not found",
-      });
-    }
-
-    await db.query(updateGuideSlotsAvailabilityByGuideIdQuery, [guide.id, is_available]);
-
-    const profileResult = await db.query(getGuideProfileByUserIdQuery, [authUserId]);
-
-    return res.status(200).json({
-      success: true,
-      profile: profileResult.rows[0] || null,
-      message: is_available
-        ? "You are now marked available"
-        : "You are now marked unavailable",
-    });
-  } catch (error) {
-    console.error("update guide availability error:", error);
-    return res.status(500).json({
-      success: false,
-      message: "Failed to update availability",
-    });
   }
 };
 

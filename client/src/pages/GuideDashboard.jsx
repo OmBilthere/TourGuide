@@ -15,8 +15,7 @@ const GuideDashboard = () => {
     confirmed: 0,
     completed: 0,
   });
-  const [guideAvailable, setGuideAvailable] = useState(true);
-  const [updatingAvailability, setUpdatingAvailability] = useState(false);
+  
 
   const authHeaders = useMemo(() => {
     const token = localStorage.getItem("token");
@@ -43,7 +42,6 @@ const GuideDashboard = () => {
 
         const guideId = profileRes.data?.profile?.id;
         const hasAvailableSlots = profileRes.data?.profile?.has_available_slots;
-        setGuideAvailable(Boolean(hasAvailableSlots));
 
         if (!guideId) {
           setStats({ requested: 0, confirmed: 0, completed: 0 });
@@ -96,27 +94,7 @@ const GuideDashboard = () => {
     return () => controller.abort();
   }, [API_BASE, authHeaders]);
 
-  const handleAvailabilityToggle = async () => {
-    try {
-      setUpdatingAvailability(true);
-      const nextValue = !guideAvailable;
-
-      const res = await axios.patch(
-        `${API_BASE}/api/guides/me/availability`,
-        { is_available: nextValue },
-        authHeaders
-      );
-
-      const latest = res.data?.profile?.has_available_slots;
-      setGuideAvailable(Boolean(latest));
-      toast.success(res.data?.message || "Availability updated");
-    } catch (error) {
-      console.error("Failed to update availability:", error);
-      toast.error(error.response?.data?.message || "Failed to update availability");
-    } finally {
-      setUpdatingAvailability(false);
-    }
-  };
+  // availability toggle removed
 
   return (
     <div className="w-full">
@@ -127,7 +105,7 @@ const GuideDashboard = () => {
               Guide Dashboard
             </h1>
             <p className="text-slate-600">
-              Manage incoming requests, track your tours, and keep your availability updated.
+              Manage incoming requests and track your tours.
             </p>
           </div>
         </div>
@@ -181,22 +159,7 @@ const GuideDashboard = () => {
                     <p className="text-xl font-semibold text-slate-900">
                       {profile.name || "Guide"}
                     </p>
-                    <button
-                      type="button"
-                      onClick={handleAvailabilityToggle}
-                      disabled={updatingAvailability}
-                      className={`px-3 py-1 rounded-full text-sm font-medium ${
-                        guideAvailable
-                          ? "bg-sky-100 text-sky-700"
-                          : "bg-amber-100 text-amber-700"
-                      } ${updatingAvailability ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`}
-                    >
-                      {updatingAvailability
-                        ? "Updating..."
-                        : guideAvailable
-                        ? "Available"
-                        : "Not Available"}
-                    </button>
+                    {/* availability toggle removed */}
                   </div>
                 </div>
               </div>
