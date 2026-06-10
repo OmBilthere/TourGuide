@@ -1,6 +1,6 @@
 # 🗺️ TourGuide
 
-A hyperlocal tourism guide booking platform connecting travelers with verified local guides for authentic city experiences.
+A guide booking platform connecting travelers with verified local guides for authentic city experiences.
 
 ## Tech Stack
 
